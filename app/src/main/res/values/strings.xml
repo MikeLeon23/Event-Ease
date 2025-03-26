@@ -71,4 +71,6 @@
     <string name="lbEventSeats">Seats:</string>
     <string name="btnSubmit">Submit</string>
 
+    <!--    Events List-->
+    <string name="btnEventList">Event List</string>
 </resources>

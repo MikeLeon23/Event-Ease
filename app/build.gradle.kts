@@ -42,4 +42,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.github.bumptech.glide:glide:4.12.0") //for Glide
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0") //for Glide
+
+    // Added dependency for RecyclerView
+    implementation("androidx.recyclerview:recyclerview:1.3.1")
 }
