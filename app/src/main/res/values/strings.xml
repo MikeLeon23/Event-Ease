@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Event Ease</string>
+    <string name="btnGoToHome">Go to Home Activity</string>
 </resources>
