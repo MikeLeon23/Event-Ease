@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-<!--    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />-->
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,47 +13,6 @@
         android:theme="@style/Theme.EventEase"
         tools:targetApi="31">
         <activity
-            android:name=".Login"
-            android:exported="false" />
-        <activity
-            android:name=".UserAccountCreation"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerAccountManage"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerEventCreation"
-            android:exported="false" />
-        <activity
-            android:name=".EventDetailFromOrganizerAccount"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerActiveEvents"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerPastEvents"
-            android:exported="false" />
-        <activity android:name=".OrganizerEventDetail" />
-        <activity
-            android:name=".OrganizerProfileUpdate"
-            android:exported="false" />
-        <activity
-            android:name=".AttendeeAccountManage"
-            android:exported="false" />
-        <activity
-            android:name=".AttendeePastEvents"
-            android:exported="false" />
-        <activity android:name=".AttendeeEventDetail" />
-        <activity
-            android:name=".EventDetailFromAttendeeAccount"
-            android:exported="false" />
-        <activity
-            android:name=".AttendeeActiveEvents"
-            android:exported="false" />
-        <activity
-            android:name=".AttendeeProfileUpdate"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -66,10 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
