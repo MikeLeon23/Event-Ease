@@ -1,3 +1,74 @@
 <resources>
     <string name="app_name">Event Ease</string>
+
+    <!--  User Account Creation  -->
+    <string name="lbAccCreate">ACCOUNT CREATION</string>
+    <string name="lbUserType">User Type:</string>
+    <string-array name="spUserType">
+        <item>Attendee</item>
+        <item>Organizer</item>
+    </string-array>
+    <string name="btnCreate">Create</string>
+
+    <!--  User Login  -->
+    <string name="lbLogin">ACCOUNT LOG_IN</string>
+    <string name="btnLogin">Login</string>
+    <string name="lbEmailLogin">Enter email</string>
+    <string name="lbPassLogin">Enter password</string>
+
+
+    <!--  Account management  -->
+    <string name="tvAccManagement">ACCOUNT</string>
+    <string name="tvName">Hugh</string>
+    <string name="tvActive">2 active events</string>
+    <string name="tvLegal">Legal</string>
+    <string name="tvVersion">Version 1.0.0</string>
+    <string name="btnEvent">Events</string>
+    <string name="btnTicket">Tickets</string>
+    <string name="btnAccount">Account</string>
+    <string name="btnSignOut">Sign Out</string>
+
+    <!-- Profile   -->
+    <string name="btnAccUpdate">Update</string>
+    <string name="btnUpload">Upload image</string>
+    <string name="lbProfile">PROFILE</string>
+    <string name="lbName">Name:</string>
+    <string name="lbEmail">Email:</string>
+    <string name="lbPhone">Phone:</string>
+    <string name="lbAddress">Address:</string>
+    <string name="lbPassword">Password:</string>
+    <string name="lbOrganization">Organization:</string>
+    <string name="lbPosition">Position:</string>
+    <string name="lbCoordinator">Coordinator:</string>
+    <string name="lbCoorPhone">Coor-phone:</string>
+    <string name="lbCoorEmail">Coor-email:</string>
+    <string name="lbEnter">...</string>
+
+    <!--Active Events-->
+    <string name="lbActiveEvents">ACTIVE EVENTS</string>
+    <string name="btnBack">Back</string>
+
+    <!--Past Events-->
+    <string name="lbPastEvents">PAST EVENTS</string>
+    <string name="tvPastEvents">2 past events</string>
+
+    <!--Create Events-->
+    <string name="lbEventCreate">EVENT CREATION</string>
+    <string name="lbEventName">Name:</string>
+    <string name="lbEventLocation">Location:</string>
+    <string name="lbEventDate">Date:</string>
+    <string name="lbEventTime">Time:</string>
+    <string name="lbEventFee">Fee:</string>
+    <string name="lbEventDescription">Description:</string>
+    <string name="lbEventReminder">Reminder:</string>
+    <string-array name="spEventReminder">
+        <item>1 hour before</item>
+        <item>2 hours before</item>
+        <item>1 day before</item>
+        <item>2 days before</item>
+        <item>1 week before</item>
+    </string-array>
+    <string name="lbEventSeats">Seats:</string>
+    <string name="btnSubmit">Submit</string>
+
 </resources>
