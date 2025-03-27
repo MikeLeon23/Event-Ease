@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -38,7 +39,26 @@ public class EventHome extends AppCompatActivity {
         events.add(new Event("4123478", "Super Star Activity", "Royal City", "Wed, Feb 5",
                 "7 pm", 9.99, "\"Laugh Track\" is a high-energy, fast-paced comedy show", "",
                 50, "http://example.com/asdfadf.jpg", ""));
-        EventAdapter adapter = new EventAdapter(events);
+        // Initialize adapter with action listener
+        EventAdapter adapter = new EventAdapter(events, new EventAdapter.OnEventActionListener() {
+            @Override
+            public void onEditClick(Event event, int position) {
+                Toast.makeText(EventHome.this, "Edit clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
+                // to do
+            }
+
+            @Override
+            public void onDeleteClick(Event event, int position) {
+                Toast.makeText(EventHome.this, "Delete clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
+                // to do
+            }
+
+            @Override
+            public void onStarClick(Event event, int position) {
+                Toast.makeText(EventHome.this, "Star clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
+                // to do
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         // Set up BottomNavigationView

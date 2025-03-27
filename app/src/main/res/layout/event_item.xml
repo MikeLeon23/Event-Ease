@@ -20,13 +20,34 @@
             android:scaleType="centerCrop"
             android:src="@drawable/placeholder" />
 
+        <ImageView
+            android:id="@+id/edit_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignTop="@id/event_image"
+            android:layout_alignStart="@id/event_image"
+            android:contentDescription="Edit Event"
+            android:src="@drawable/ic_edit" />
+
+        <!-- Delete Icon (Top-Right) -->
+        <ImageView
+            android:id="@+id/delete_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignTop="@id/event_image"
+            android:layout_alignEnd="@id/event_image"
+            android:contentDescription="Delete Event"
+            android:src="@drawable/ic_delete" />
+
         <TextView
             android:id="@+id/event_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/event_image"
             android:layout_marginTop="8dp"
-            android:text="GIGI Comedy Show"
+            android:layout_alignParentLeft="true"
+            android:layout_toStartOf="@id/star_icon"
+            android:text="Event Title"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -37,8 +58,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/event_title"
             android:layout_marginTop="4dp"
-            android:layout_toStartOf="@id/star_icon"
-            android:text="Wed, Feb 5, 9 p.m, Royal City"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:text="Event start time and place"
             android:textColor="#808080"
             android:textSize="14sp" />
 

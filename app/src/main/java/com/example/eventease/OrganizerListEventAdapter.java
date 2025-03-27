@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,7 +34,7 @@ public class OrganizerListEventAdapter extends RecyclerView.Adapter<OrganizerLis
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = listEvents.get(position);
-        holder.tvEventName.setText(event.getEventName());
+        holder.titleTextView.setText(event.getEventName());
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, OrganizerEventDetail.class);
@@ -48,13 +49,21 @@ public class OrganizerListEventAdapter extends RecyclerView.Adapter<OrganizerLis
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvEventName;
-        CheckBox cbSelectEvent;
+        ImageView imageView;
+        TextView titleTextView;
+        TextView detailsTextView;
+        ImageView starIcon;
+        ImageView editIcon;
+        ImageView deleteIcon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvEventName = itemView.findViewById(R.id.tvEventName);
-            cbSelectEvent = itemView.findViewById(R.id.cbSelectEvent);
+            imageView = itemView.findViewById(R.id.event_image);
+            titleTextView = itemView.findViewById(R.id.event_title);
+            detailsTextView = itemView.findViewById(R.id.event_details);
+            starIcon = itemView.findViewById(R.id.star_icon);
+            editIcon = itemView.findViewById(R.id.edit_icon);
+            deleteIcon = itemView.findViewById(R.id.delete_icon);
         }
     }
 
