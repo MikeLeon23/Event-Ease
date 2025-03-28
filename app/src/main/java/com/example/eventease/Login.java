@@ -1,6 +1,7 @@
 package com.example.eventease;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,9 +46,16 @@ public class Login extends AppCompatActivity {
 
         if (user != null) {
 
+             //Store email in SharedPreferences when login is successful
+            SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("user_email", user.getEmail()); // Store the email from the user object
+            editor.apply();
+
             if(user.getUserType().equals("Attendee")){
                 // Successful login, navigate to profile update page or main screen
-                Intent intent = new Intent(Login.this, AttendeeAccountManage.class);
+               // Intent intent = new Intent(Login.this, AttendeeAccountManage.class);
+                Intent intent = new Intent(Login.this, OrganizerEventCreation.class);
                 intent.putExtra("COLUMN_ID", user.getId());
                 startActivity(intent);
                 finish();

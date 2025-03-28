@@ -160,15 +160,21 @@ public class OrganizerEventCreation extends AppCompatActivity {
         String reminder = spinnerReminder.getSelectedItem().toString();
         int seat = Integer.parseInt(edEventSeat.getText().toString());
 
-        boolean isInserted = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, imagePath);
+        // Insert event data into the database and get the event ID
+        long eventId = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, imagePath);
+// Insert event data into the database
+     //   long isInserted = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, imagePath);
 
-        if (isInserted) {
+        if (eventId != -1) {
             Toast.makeText(this, "Event Saved Successfully", Toast.LENGTH_SHORT).show();
+
+            // Start the ShareActivity and pass the event ID
+            Intent intent = new Intent(OrganizerEventCreation.this, ShareEventActivity.class);
+            intent.putExtra("eventId", eventId); // Pass the eventId to ShareActivity
+            startActivity(intent);
         } else {
             Toast.makeText(this, "Failed to Save Event", Toast.LENGTH_SHORT).show();
         }
-
-        startActivity(new Intent(OrganizerEventCreation.this, OrganizerAccountManage.class));
     }
 
 }

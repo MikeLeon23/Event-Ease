@@ -44,6 +44,9 @@ public class AttendeeAccountManage extends AppCompatActivity {
         ListView listViewAccount = findViewById(R.id.listViewAttendeeAccount);
         ListView listViewLegal = findViewById(R.id.listViewLegal);
 
+        // Notifications Button
+        ImageView notificationsButton = findViewById(R.id.notificationsButton);
+
         tvAttName = findViewById(R.id.tvAttendeeName);
         imageView = findViewById(R.id.imageAttendee);
         TextView btnSignOut = findViewById(R.id.btnSignOut);
@@ -58,6 +61,8 @@ public class AttendeeAccountManage extends AppCompatActivity {
         String[] account = {"Profile Management", "Active Events", "Past Events"};
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, account);
         listViewAccount.setAdapter(adapter1);
+
+
         listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -78,6 +83,14 @@ public class AttendeeAccountManage extends AppCompatActivity {
                         startActivity(intent);
                         break;
                 }
+            }
+        });
+
+        notificationsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AttendeeAccountManage.this, NotificationActivity.class);
+                startActivity(intent);
             }
         });
 
