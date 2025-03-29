@@ -17,13 +17,13 @@
         android:padding="8dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/hamburger_menu"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:contentDescription="Menu"
-            android:src="@drawable/ic_menu" />
+<!--        <ImageView-->
+<!--            android:id="@+id/hamburger_menu"-->
+<!--            android:layout_width="24dp"-->
+<!--            android:layout_height="24dp"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:contentDescription="Menu"-->
+<!--            android:src="@drawable/ic_menu" />-->
 
         <EditText
             android:id="@+id/search_text"

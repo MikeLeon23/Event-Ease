@@ -45,10 +45,18 @@ public class Login extends AppCompatActivity {
         User user = dbHelper.getUserByUsernameAndPassword(username, password);
 
         if (user != null) {
+            // Save user information using SharedPreferences
+            SharedPreferences sharedPreferences = getSharedPreferences("UserInfo",
+                    MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("user_id", user.getId());
+            editor.putString("user_name", user.getName());
+            editor.putString("user_type", user.getUserType());
+            editor.commit();
 
              //Store email in SharedPreferences when login is successful
-            SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
+            sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            editor = sharedPreferences.edit();
             editor.putString("user_email", user.getEmail()); // Store the email from the user object
             editor.apply();
 

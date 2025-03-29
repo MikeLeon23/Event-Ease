@@ -8,53 +8,49 @@
     tools:context=".OrganizerAccountManage">
 
     <TextView
-        android:layout_width="217dp"
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
         android:layout_height="49dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="164dp"
         android:fontFamily="sans-serif"
         android:text="@string/tvAccManagement"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.264"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/listViewOrganizerAccount"
-        android:layout_width="311dp"
-        android:layout_height="181dp"
-        android:layout_marginTop="300dp"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.403"
+        app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvLegal" />
 
     <TextView
         android:id="@+id/tvLegal"
         android:layout_width="93dp"
         android:layout_height="30dp"
-        android:layout_marginTop="512dp"
+        android:layout_marginStart="24dp"
         android:text="@string/tvLegal"
         android:textSize="24sp"
         android:textStyle="bold|italic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.18"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/listViewLegal" />
 
     <LinearLayout
+        android:id="@+id/linearLayout7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintHorizontal_bias="0.053"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.778">
+        app:layout_constraintTop_toBottomOf="@+id/listViewOrganizerAccount">
 
         <ImageView
             android:layout_width="24dp"
@@ -75,89 +71,36 @@
 
     <ListView
         android:id="@+id/listViewLegal"
-        android:layout_width="282dp"
-        android:layout_height="135dp"
-        android:layout_marginBottom="152dp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+        android:layout_width="376dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.415"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.929" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="379dp"
-        android:layout_height="96dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.768"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.914">
-
-        <Button
-            android:id="@+id/btnEvent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btnEvent"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/btnTicket"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btnTicket"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/btnAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btnAccount"
-            tools:ignore="TouchTargetSizeCheck" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
         android:id="@+id/tvVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="17dp"
         android:text="@string/tvVersion"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listViewOrganizerAccount"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintHorizontal_bias="0.948" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayoutOrg"
-        android:layout_width="352dp"
-        android:layout_height="123dp"
-        android:layout_marginTop="148dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="342dp"
+        android:layout_height="122dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageOrg"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="122dp"
+            android:layout_height="123dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -168,30 +111,41 @@
 
         <TextView
             android:id="@+id/tvOrgActiveEvents"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="99dp"
+            android:layout_height="33dp"
             android:text="@string/tvActive"
             android:textStyle="italic"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.659"
+            app:layout_constraintHorizontal_bias="0.675"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.692" />
+            app:layout_constraintVertical_bias="0.678" />
 
         <TextView
             android:id="@+id/tvOrgName"
-            android:layout_width="94dp"
-            android:layout_height="35dp"
+            android:layout_width="132dp"
+            android:layout_height="33dp"
             android:text="@string/tvName"
             android:textSize="26dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.667"
+            app:layout_constraintHorizontal_bias="0.777"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.34" />
+            app:layout_constraintVertical_bias="0.311" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_nav_background"
+        app:itemIconTint="@drawable/bottom_nav_colors"
+        app:itemTextColor="@drawable/bottom_nav_colors"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

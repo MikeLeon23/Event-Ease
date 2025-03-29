@@ -1,5 +1,7 @@
 package com.example.eventease;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
     private List<Event> eventList;
+    private Context context;
     private OnEventActionListener actionListener;
 
     // Interface for handling edit and delete actions
@@ -22,9 +25,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         void onStarClick(Event event, int position);
     }
 
-    public EventAdapter(List<Event> eventList, OnEventActionListener actionListener) {
+    public EventAdapter(Context context, List<Event> eventList, OnEventActionListener actionListener) {
         this.eventList = eventList;
         this.actionListener = actionListener;
+        this.context = context;
     }
 
     @NonNull
@@ -58,6 +62,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             if (actionListener != null) {
                 actionListener.onStarClick(event, position);
             }
+        });
+
+        // Set click listener for the entire card
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, EventDetail.class);
+            intent.putExtra("event_id", event.getEventId()); // Pass the event ID
+            context.startActivity(intent);
         });
     }
 

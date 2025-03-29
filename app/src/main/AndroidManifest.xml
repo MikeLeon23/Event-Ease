@@ -22,6 +22,9 @@
             android:name=".NotificationActivity"
             android:exported="false" />
         <activity
+            android:name=".EventDetail"
+            android:exported="false" />
+        <activity
             android:name=".EventHome"
             android:exported="false" />
         <activity

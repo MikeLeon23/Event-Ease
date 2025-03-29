@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 
@@ -50,9 +51,6 @@ public class AttendeeAccountManage extends AppCompatActivity {
         tvAttName = findViewById(R.id.tvAttendeeName);
         imageView = findViewById(R.id.imageAttendee);
         TextView btnSignOut = findViewById(R.id.btnSignOut);
-        Button btnEvents = findViewById(R.id.btnEvent);
-        Button btnTickets = findViewById(R.id.btnTicket);
-        Button btnAccount = findViewById(R.id.btnAccount);
 
         dbHelper = new DBHelper(this);
         attendeeId = getIntent().getStringExtra("COLUMN_ID");
@@ -120,6 +118,10 @@ public class AttendeeAccountManage extends AppCompatActivity {
                 startActivity(new Intent(AttendeeAccountManage.this, Login.class));
             }
         });
+
+        // Set up BottomNavigationView using the helper
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        NavigationHelper.setupBottomNavigation(this, bottomNavigationView);
     }
 
     // Handle the result of image selection from gallery
