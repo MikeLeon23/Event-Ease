@@ -1,6 +1,7 @@
 package com.example.eventease;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,6 +45,14 @@ public class Login extends AppCompatActivity {
         User user = dbHelper.getUserByUsernameAndPassword(username, password);
 
         if (user != null) {
+            // Save user information using SharedPreferences
+            SharedPreferences sharedPreferences = getSharedPreferences("UserInfo",
+                    MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("user_id", user.getId());
+            editor.putString("user_name", user.getName());
+            editor.putString("user_type", user.getUserType());
+            editor.commit();
 
             if(user.getUserType().equals("Attendee")){
                 // Successful login, navigate to profile update page or main screen

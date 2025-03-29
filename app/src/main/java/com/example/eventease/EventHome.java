@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventHome extends AppCompatActivity {
+    private DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +32,14 @@ public class EventHome extends AppCompatActivity {
         // Set up RecyclerView
         RecyclerView recyclerView = findViewById(R.id.event_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<Event> events = new ArrayList<>();
-//        events.add(new Event("GIGI Comedy Show", "Wed, Feb 5, 9 p.m, Royal City"));
-        events.add(new Event("412341", "GIGI Comedy Show", "Royal City", "Wed, Feb 5",
-                "7 pm", 9.99, "\"Laugh Track\" is a high-energy, fast-paced comedy", "",
-        50, "http://example.com/asdfadf.jpg", ""));
-        events.add(new Event("4123478", "Super Star Activity", "Royal City", "Wed, Feb 5",
-                "7 pm", 9.99, "\"Laugh Track\" is a high-energy, fast-paced comedy show", "",
-                50, "http://example.com/asdfadf.jpg", ""));
+
+        dbHelper = new DBHelper(this);
+        List<Event> events = dbHelper.getActiveEvents();
+        if (events.isEmpty()) {
+            Toast.makeText(this, "No active events found", Toast.LENGTH_SHORT).show();
+        }
         // Initialize adapter with action listener
-        EventAdapter adapter = new EventAdapter(events, new EventAdapter.OnEventActionListener() {
+        EventAdapter adapter = new EventAdapter(this, events, new EventAdapter.OnEventActionListener() {
             @Override
             public void onEditClick(Event event, int position) {
                 Toast.makeText(EventHome.this, "Edit clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
@@ -62,7 +61,10 @@ public class EventHome extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // Set up BottomNavigationView
+//        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+//        bottomNavigationView.setSelectedItemId(R.id.navigation_events); // Highlight "Events"
+        // Set up BottomNavigationView using the helper
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_events); // Highlight "Events"
+        NavigationHelper.setupBottomNavigation(this, bottomNavigationView);
     }
 }

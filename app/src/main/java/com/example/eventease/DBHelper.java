@@ -187,21 +187,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Event getEventById(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("events", null, "eventId = ?", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TABLE_EVENTS, null, "event_id = ?" + eventId, new String[]{eventId}, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             Event event = new Event(
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventId")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventName")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventLocation")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventDate")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventTime")),
-                    cursor.getDouble(cursor.getColumnIndexOrThrow("eventFee")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventDescription")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventReminder")),
-                    cursor.getInt(cursor.getColumnIndexOrThrow("eventSeat")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventImagePath")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("eventStatus"))
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS))
             );
             cursor.close();
             return event;
@@ -240,7 +240,7 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selection = "eventStatus = ?";
+        String selection = "event_status = ?";
         String[] selectionArgs = {"active"};
 
         Cursor cursor = db.query(TABLE_EVENTS, null, selection, selectionArgs, null, null, null);
@@ -248,8 +248,8 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Event event = new Event(
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
