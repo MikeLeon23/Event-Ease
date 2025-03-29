@@ -14,6 +14,7 @@ public class Event {
     private String eventImagePath;
 
     private String eventStatus;
+    private boolean isInterested;
 
     public Event(String eventId, String eventName, String eventLocation, String eventDate,
                  String eventTime, double eventFee, String eventDescription, String eventReminder,
@@ -29,6 +30,7 @@ public class Event {
         this.eventSeat = eventSeat;
         this.eventImagePath = eventImagePath;
         this.eventStatus = eventStatus;
+        this.isInterested = false;
     }
 
     public String getEventId() {
@@ -117,5 +119,11 @@ public class Event {
 
     public void setEventStatus(String eventStatus) {
         this.eventStatus = eventStatus;
+    }
+    public boolean isInterested() {
+        return isInterested;
+    }
+    public void setInterested(boolean isInterested) {
+        this.isInterested = isInterested;
     }
 }

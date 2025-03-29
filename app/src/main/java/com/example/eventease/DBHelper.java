@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.example.eventease.Notification;
@@ -13,7 +14,7 @@ import java.util.List;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "userProfile.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     public static final String COLUMN_IMAGE_PATH = "image_path"; // Store the image path here
 
     // USER PROFILE TABLE
@@ -46,6 +47,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NOTIFICATION_USER_ID = "user_id";
     public static final String COLUMN_NOTIFICATION_MESSAGE = "message";
     public static final String COLUMN_NOTIFICATION_STATUS = "status"; // pending, accepted, declined
+
+    // INTEREST TABLE
+    public static final String TABLE_INTERESTED_EVENTS = "interested_events";
+    public static final String COLUMN_INTEREST_ID = "interest_id";
+    public static final String COLUMN_INTEREST_USER_ID = "interest_user_id";
+    public static final String COLUMN_INTEREST_EVENT_ID = "interest_event_id";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -110,7 +117,18 @@ public class DBHelper extends SQLiteOpenHelper {
                 "status TEXT, " +
                 "FOREIGN KEY(event_id) REFERENCES events(event_id))";
         db.execSQL(CREATE_INVITATION_TABLE);
+
+        // Create interested events table
+        String CREATE_INTERESTED_EVENT_TABLE = "CREATE TABLE " + TABLE_INTERESTED_EVENTS + "(" +
+                COLUMN_INTEREST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_INTEREST_USER_ID + " INTEGER, " +
+                COLUMN_INTEREST_EVENT_ID + " INTEGER, " +
+                "FOREIGN KEY (" + COLUMN_INTEREST_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "), " +
+                "FOREIGN KEY (" + COLUMN_INTEREST_EVENT_ID + ") REFERENCES " + TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "))";
+        db.execSQL(CREATE_INTERESTED_EVENT_TABLE);
     }
+
+
 
 //To track which users are invited to which events, add a method in your DBHelper class to store invitations.
     public void saveEventInvitation(String eventId, String email) {
@@ -131,6 +149,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTED_EVENTS);
 
         db.execSQL("DROP TABLE IF EXISTS event_invitations");
         db.execSQL("DROP TABLE IF EXISTS tickets");
@@ -439,5 +458,115 @@ public class DBHelper extends SQLiteOpenHelper {
         return events;
     }
 
+    public boolean insertInterestedEvent(String userId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_INTEREST_USER_ID, userId);
+        values.put(COLUMN_INTEREST_EVENT_ID, eventId);
 
+        long result = db.insert(TABLE_INTERESTED_EVENTS, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    public boolean deleteInterestedEventById(String userId, String eventId) {
+        // Validate inputs
+        if (userId == null || userId.trim().isEmpty() || eventId == null || eventId.trim().isEmpty()) {
+            return false;
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean success = false;
+
+        try {
+            int result = db.delete(TABLE_INTERESTED_EVENTS,
+                    COLUMN_INTEREST_USER_ID + " = ? AND " + COLUMN_INTEREST_EVENT_ID + " = ?",
+                    new String[]{userId, eventId});
+            success = result > 0;
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
+    public List<Event> getAllActiveEventsByUserId(String userId) {
+        List<Event> events = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query =  "SELECT e.*," +
+                            " CASE" +
+                                " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
+                                " ELSE 0" +
+                            " END AS is_interested" +
+                        " FROM " + TABLE_EVENTS +" e" +
+                        " LEFT JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
+                            " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID + " AND ie." + COLUMN_INTEREST_USER_ID + " = ?" +
+                        " WHERE e." + COLUMN_EVENT_STATUS + " = 'active'";
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Event event = new Event(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS))
+                );
+                event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
+                events.add(event);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        db.close();
+        return events;
+    }
+    public List<Event> getInterestedEventsByUserId(String userId) {
+        List<Event> events = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // SQL query to join event_info and interested_events tables
+        String query =  "SELECT e.*," +
+                            " CASE" +
+                                " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
+                                " ELSE 0" +
+                            " END AS is_interested" +
+                        " FROM " + TABLE_EVENTS + " e" +
+                        " INNER JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
+                            " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID +
+                        " WHERE ie." + COLUMN_INTEREST_USER_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Event event = new Event(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS))
+                );
+                event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
+                events.add(event);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return events;
+    }
 }
