@@ -28,12 +28,12 @@ import java.util.Calendar;
 public class OrganizerEventCreation extends AppCompatActivity {
 
     EditText edEventName, edEventLocation, edEventFee, edEventDescription, edEventSeat;
-    TextView edEventDate, edEventTime, btnUploadImage, btnEventCreate, btnGoBack;
-    Spinner spEventReminder, spEventStatus;
+    TextView edEventDate, edEventTime, btnUploadImage, btnEventCreate;
+    Spinner spinnerReminder;
     Calendar calendar;
     DBHelper dbHelper;
     private ImageView imageView;
-    String imagePath, organizerId;
+    String imagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +46,6 @@ public class OrganizerEventCreation extends AppCompatActivity {
             return insets;
         });
 
-        dbHelper = new DBHelper(this);
-        organizerId = getIntent().getStringExtra("COLUMN_ID");
-
         edEventName = findViewById(R.id.edEventName);
         edEventLocation = findViewById(R.id.edEventLocation);
         edEventDate = findViewById(R.id.tvEventDate);
@@ -56,12 +53,10 @@ public class OrganizerEventCreation extends AppCompatActivity {
         edEventFee = findViewById(R.id.edEventFee);
         edEventDescription = findViewById(R.id.edEventDescription);
         edEventSeat = findViewById(R.id.edEventSeats);
-        spEventReminder = findViewById(R.id.spEventReminder);
-        spEventStatus = findViewById(R.id.spEventStatus);
+        spinnerReminder = findViewById(R.id.spEventReminder);
         imageView = findViewById(R.id.imageEventCreate);
         btnUploadImage = findViewById(R.id.btnEvnImgUpload);
         btnEventCreate = findViewById(R.id.btnEventCreate);
-        btnGoBack = findViewById(R.id.btnTurnBack);
 
         btnUploadImage.setOnClickListener(v -> openGallery());
 
@@ -96,11 +91,11 @@ public class OrganizerEventCreation extends AppCompatActivity {
             timePickerDialog.show();
         });
 
-        spEventReminder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerReminder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedReminder = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(), "Reminder selected: " + selectedReminder, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Reminder set: " + selectedReminder, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -109,27 +104,10 @@ public class OrganizerEventCreation extends AppCompatActivity {
             }
         });
 
-        spEventStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedStatus = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(), "Status selected: " + selectedStatus, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        dbHelper = new DBHelper(this);
 
         // Save event to database
-        btnEventCreate.setOnClickListener(v -> saveEventToDatabase(organizerId));
-        btnGoBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(OrganizerEventCreation.this, OrganizerAccountManage.class));
-            }
-        });
+        btnEventCreate.setOnClickListener(v -> saveEventToDatabase());
     }
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -172,26 +150,31 @@ public class OrganizerEventCreation extends AppCompatActivity {
         }
     }
 
-    private void saveEventToDatabase(String organizerId) {
+    private void saveEventToDatabase() {
         String name = edEventName.getText().toString();
         String location = edEventLocation.getText().toString();
         String date = edEventDate.getText().toString();
         String time = edEventTime.getText().toString();
         double fee = Double.parseDouble(edEventFee.getText().toString());
         String description = edEventDescription.getText().toString();
-        String reminder = spEventReminder.getSelectedItem().toString();
+        String reminder = spinnerReminder.getSelectedItem().toString();
         int seat = Integer.parseInt(edEventSeat.getText().toString());
-        String status = spEventStatus.getSelectedItem().toString();
 
-        boolean isInserted = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, status, imagePath, organizerId, false);
+        // Insert event data into the database and get the event ID
+        long eventId = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, imagePath);
+// Insert event data into the database
+     //   long isInserted = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, imagePath);
 
-        if (isInserted) {
+        if (eventId != -1) {
             Toast.makeText(this, "Event Saved Successfully", Toast.LENGTH_SHORT).show();
+
+            // Start the ShareActivity and pass the event ID
+            Intent intent = new Intent(OrganizerEventCreation.this, ShareEventActivity.class);
+            intent.putExtra("eventId", eventId); // Pass the eventId to ShareActivity
+            startActivity(intent);
         } else {
             Toast.makeText(this, "Failed to Save Event", Toast.LENGTH_SHORT).show();
         }
-
-        startActivity(new Intent(OrganizerEventCreation.this, OrganizerAccountManage.class));
     }
 
 }

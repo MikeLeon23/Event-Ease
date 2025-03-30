@@ -1,8 +1,10 @@
 package com.example.eventease;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,9 +13,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -25,7 +31,7 @@ import java.io.File;
 
 public class OrganizerAccountManage extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 1;
-    TextView tvOrgName, tvActEveOrgCount;
+    TextView tvOrgName;
     ImageView imageView;
     DBHelper dbHelper;
     String organizerId;
@@ -44,10 +50,9 @@ public class OrganizerAccountManage extends AppCompatActivity {
         });
 
         ListView listViewAccount = findViewById(R.id.listViewOrganizerAccount);
-
+        ListView listViewLegal = findViewById(R.id.listViewLegal);
         tvOrgName = findViewById(R.id.tvOrgName);
         imageView = findViewById(R.id.imageOrg);
-        tvActEveOrgCount = findViewById(R.id.tvActEveOrgCount); //to be done when have time
         TextView btnSignOut = findViewById(R.id.btnSignOut);
 
         dbHelper = new DBHelper(this);
@@ -85,11 +90,30 @@ public class OrganizerAccountManage extends AppCompatActivity {
             }
         });
 
+        String[] legal = {"Term  of services", "Privacy", "Accessibility"};
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, legal);
+        listViewLegal.setAdapter(adapter2);
+        listViewLegal.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+//                        startActivity(new Intent(MainActivity.this)); term page
+                        break;
+                    case 1:
+//                        startActivity(new Intent(MainActivity.this)); privacy page
+                        break;
+                    case 2:
+//                        startActivity(new Intent(MainActivity.this)); accessibility page
+                        break;
+                }
+            }
+        });
 
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OrganizerAccountManage.this, MainActivity.class));
+                startActivity(new Intent(OrganizerAccountManage.this, Login.class));
             }
         });
 
@@ -99,6 +123,7 @@ public class OrganizerAccountManage extends AppCompatActivity {
 
 //        imageView.setOnClickListener(v -> requestStoragePermission());
     }
+
 
     // Handle the result of image selection from gallery
     @Override
@@ -165,4 +190,6 @@ public class OrganizerAccountManage extends AppCompatActivity {
 //        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 //        startActivityForResult(intent, PICK_IMAGE_REQUEST);
 //    }
+
+
 }
