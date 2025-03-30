@@ -49,5 +49,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, EventHome.class));
             }
         });
+        btnCreateNewAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, UserAccountCreation.class));
+            }
+        });
     }
 }
