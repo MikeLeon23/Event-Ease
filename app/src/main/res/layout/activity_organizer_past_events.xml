@@ -10,76 +10,45 @@
     <TextView
         android:layout_width="261dp"
         android:layout_height="55dp"
-        android:layout_marginTop="152dp"
+        android:layout_marginTop="88dp"
         android:fontFamily="sans-serif"
         android:text="@string/lbPastEvents"
-        android:textAlignment="center"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.264"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout5"
-        android:layout_width="101dp"
-        android:layout_height="52dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.184"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.78">
+        app:layout_constraintVertical_bias="0.747">
 
         <ImageView
-            android:layout_width="29dp"
-            android:layout_height="29dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/turnback"
             android:tint="@color/black"
             tools:ignore="ExtraText,UseAppTint" />
 
         <TextView
             android:id="@+id/btnTurnBack"
-            android:layout_width="56dp"
-            android:layout_height="29dp"
-            android:paddingStart="8dp"
-            android:text="@string/btnBack"
-            android:textColor="@color/black"
-            android:textSize="20dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout7"
-        android:layout_width="156dp"
-        android:layout_height="56dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.76"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.783">
-
-        <ImageView
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:src="@drawable/attendee"
-            android:tint="@color/black"
-            tools:ignore="ExtraText,UseAppTint" />
-
-        <TextView
-            android:id="@+id/btnAttendeeListPast"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="8dp"
-            android:text="@string/btnAttendeeList"
+            android:text="@string/btnBack"
             android:textColor="@color/black"
-            android:textSize="20dp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -91,9 +60,10 @@
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.768"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.94">
+        app:layout_constraintVertical_bias="0.914">
 
         <Button
             android:id="@+id/btnEvent"
@@ -143,64 +113,61 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
-        android:layout_width="356dp"
-        android:layout_height="81dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="352dp"
+        android:layout_height="123dp"
+        android:layout_marginTop="148dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.063">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="92dp"
-            android:layout_height="75dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintVertical_bias="1.0"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/tvPastEveCountOrg"
+            android:id="@+id/tvActEveCountAtt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tvPastEvents"
-            android:textSize="16sp"
             android:textStyle="italic"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.155"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintHorizontal_bias="0.655"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.898" />
+            app:layout_constraintVertical_bias="0.673" />
 
         <TextView
-            android:id="@+id/tvOrgName"
-            android:layout_width="102dp"
-            android:layout_height="30dp"
+            android:id="@+id/btnEveImgUpload"
+            android:layout_width="96dp"
+            android:layout_height="26dp"
             android:text="@string/tvName"
-            android:textSize="26sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.166"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintHorizontal_bias="0.667"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.313" />
+            app:layout_constraintVertical_bias="0.34" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewOrganizerPast"
-        android:layout_width="424dp"
-        android:layout_height="421dp"
+        android:layout_width="392dp"
+        android:layout_height="420dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389" />
+        app:layout_constraintVertical_bias="0.506" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
