@@ -47,7 +47,7 @@ public class OrganizerAccountManage extends AppCompatActivity {
 
         tvOrgName = findViewById(R.id.tvOrgName);
         imageView = findViewById(R.id.imageOrg);
-        tvActEveOrgCount = findViewById(R.id.tvActEveOrgCount); //to be done when have time
+//        tvActEveOrgCount = findViewById(R.id.tvActEveOrgCount); //to be done when have time
         TextView btnSignOut = findViewById(R.id.btnSignOut);
 
         dbHelper = new DBHelper(this);
