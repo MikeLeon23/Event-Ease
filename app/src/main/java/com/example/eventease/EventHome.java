@@ -95,7 +95,6 @@ public class EventHome extends AppCompatActivity {
         List<Event> events;
         if (selectedTab == 0) {
             events = dbHelper.getAllActiveEventsByUserId(userId); // ALL tab
-//            events = dbHelper.getActiveEvents();
         } else {
             events = dbHelper.getInterestedEventsByUserId(userId); // Interested tab
         }

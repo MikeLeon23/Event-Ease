@@ -16,12 +16,9 @@ public class NavigationHelper {
             bottomNavigationView.setSelectedItemId(R.id.navigation_events);
         } else if (activity instanceof AttendeeAccountManage || activity instanceof OrganizerAccountManage) {
             bottomNavigationView.setSelectedItemId(R.id.navigation_account);
+        } else if (activity instanceof TicketsActivity) {
+            bottomNavigationView.setSelectedItemId(R.id.navigation_tickets);
         }
-//        else if (activity instanceof TicketsActivity) {
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_tickets);
-//        } else if (activity instanceof AccountActivity) {
-//            bottomNavigationView.setSelectedItemId(R.id.navigation_account);
-//        }
 
         // Set up the navigation listener
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -43,12 +40,9 @@ public class NavigationHelper {
                 return true;
             } else if (itemId == R.id.navigation_account && (activity instanceof AttendeeAccountManage || activity instanceof OrganizerAccountManage)) {
                 return true;
+            } else if (itemId == R.id.navigation_tickets && activity instanceof TicketsActivity) {
+                return true;
             }
-//            else if (itemId == R.id.navigation_tickets && activity instanceof TicketsActivity) {
-//                return true;
-//            } else if (itemId == R.id.navigation_account && activity instanceof AccountActivity) {
-//                return true;
-//            }
 
             // Navigate to the appropriate activity
             if (itemId == R.id.navigation_events) {
@@ -56,9 +50,6 @@ public class NavigationHelper {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 activity.startActivity(intent);
                 activity.finish();
-                return true;
-            } else if (itemId == R.id.navigation_tickets) {
-                //
                 return true;
             } else if (itemId == R.id.navigation_account) {
                 Intent intent;
@@ -76,20 +67,13 @@ public class NavigationHelper {
                 activity.startActivity(intent);
                 activity.finish();
                 return true;
+            } else if (itemId == R.id.navigation_tickets) {
+                Intent intent = new Intent(activity, TicketsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                activity.startActivity(intent);
+                activity.finish();
+                return true;
             }
-//            else if (itemId == R.id.navigation_tickets) {
-//                Intent intent = new Intent(activity, TicketsActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                activity.startActivity(intent);
-//                activity.finish();
-//                return true;
-//            } else if (itemId == R.id.navigation_account) {
-//                Intent intent = new Intent(activity, AccountActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                activity.startActivity(intent);
-//                activity.finish();
-//                return true;
-//            }
             return false;
         });
     }

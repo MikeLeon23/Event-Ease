@@ -16,6 +16,15 @@ public class Event {
     private String eventStatus;
     private boolean isInterested;
 
+    public Event(String eventId, String eventName, String eventLocation, String eventDate, String eventTime, String eventStatus) {
+        this.eventId = eventId;
+        this.eventName = eventName;
+        this.eventLocation = eventLocation;
+        this.eventDate = eventDate;
+        this.eventTime = eventTime;
+        this.eventStatus = eventStatus;
+    }
+
     public Event(String eventId, String eventName, String eventLocation, String eventDate,
                  String eventTime, double eventFee, String eventDescription, String eventReminder,
                  int eventSeat, String eventImagePath, String eventStatus) {

@@ -1,5 +1,6 @@
 package com.example.eventease;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,11 +12,15 @@ import androidx.core.content.ContextCompat;
 public class EventDetail extends AppCompatActivity {
     private DBHelper dbHelper;
     private String eventId;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
+
+        SharedPreferences prefs = EventDetail.this.getSharedPreferences("UserInfo", MODE_PRIVATE);
+        userId = prefs.getString("user_id", null);
 
         // Initialize DBHelper
         dbHelper = new DBHelper(this);
@@ -79,6 +84,7 @@ public class EventDetail extends AppCompatActivity {
 
     private void registerForEvent() {
         // Implement registration logic (e.g., API call or database update)
+        dbHelper.insertTicket(userId, eventId);
         Toast.makeText(this, "Registered for event", Toast.LENGTH_SHORT).show();
     }
 }

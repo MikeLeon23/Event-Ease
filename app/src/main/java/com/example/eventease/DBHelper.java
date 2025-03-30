@@ -14,7 +14,7 @@ import java.util.List;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "userProfile.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 10;
     public static final String COLUMN_IMAGE_PATH = "image_path"; // Store the image path here
 
     // USER PROFILE TABLE
@@ -53,6 +53,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_INTEREST_ID = "interest_id";
     public static final String COLUMN_INTEREST_USER_ID = "interest_user_id";
     public static final String COLUMN_INTEREST_EVENT_ID = "interest_event_id";
+
+    // TICKET TABLE
+    public static final String TABLE_TICKET = "tickets";
+    public static final String COLUMN_TICKET_ID = "ticket_id";
+    public static final String COLUMN_TICKET_USER_ID = "ticket_user_id";
+    public static final String COLUMN_TICKET_EVENT_ID = "ticket_event_id";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -97,18 +103,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY (" + COLUMN_NOTIFICATION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "))";
         db.execSQL(createNotificationTable);
 
-
-        String createTicketsTable = "CREATE TABLE tickets (" +
-                "ticket_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "user_id INTEGER, " +
-                "event_id INTEGER, " +
-                "FOREIGN KEY(user_id) REFERENCES user_profile(id), " +
-                "FOREIGN KEY(event_id) REFERENCES event_info(event_id))";
-        db.execSQL(createTicketsTable);
-
-        Log.d("DBHelper", "Database Created Successfully");
-
-
         // Create Event Invitations Table
         String CREATE_INVITATION_TABLE = "CREATE TABLE event_invitations (" +
                 "invitation_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -126,6 +120,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY (" + COLUMN_INTEREST_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "), " +
                 "FOREIGN KEY (" + COLUMN_INTEREST_EVENT_ID + ") REFERENCES " + TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "))";
         db.execSQL(CREATE_INTERESTED_EVENT_TABLE);
+
+        // Create ticket table
+        String CREATE_TICKET_TABLE = "CREATE TABLE " + TABLE_TICKET + "(" +
+                COLUMN_TICKET_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_TICKET_USER_ID + " INTEGER, " +
+                COLUMN_TICKET_EVENT_ID + " INTEGER, " +
+                "FOREIGN KEY (" + COLUMN_TICKET_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "), " +
+                "FOREIGN KEY (" + COLUMN_TICKET_EVENT_ID + ") REFERENCES " + TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "))";
+        db.execSQL(CREATE_TICKET_TABLE);
+
+        Log.d("DBHelper", "Database Created Successfully");
     }
 
 
@@ -150,9 +155,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTED_EVENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TICKET);
 
         db.execSQL("DROP TABLE IF EXISTS event_invitations");
-        db.execSQL("DROP TABLE IF EXISTS tickets");
         onCreate(db);
     }
 
@@ -568,5 +573,81 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.close();
         return events;
+    }
+
+    public boolean insertTicket(String userId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TICKET_USER_ID, userId);
+        values.put(COLUMN_TICKET_EVENT_ID, eventId);
+
+        long result = db.insert(TABLE_TICKET, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    public boolean deleteTicket(String userId, String eventId) {
+        // Validate inputs
+        if (userId == null || userId.trim().isEmpty() || eventId == null || eventId.trim().isEmpty()) {
+            return false;
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean success = false;
+
+        try {
+            int result = db.delete(TABLE_TICKET,
+                    COLUMN_TICKET_USER_ID + " = ? AND " + COLUMN_TICKET_EVENT_ID + " = ?",
+                    new String[]{userId, eventId});
+            success = result > 0;
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
+    public List<Ticket> getTicketsByUserId(String userId) {
+        List<Ticket> tickets = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query =  "SELECT t." + COLUMN_TICKET_ID +
+                ", u.*" +
+                ", e.*" +
+                " FROM " + TABLE_TICKET + " t" +
+                " JOIN " + TABLE_USERS + " u" +
+                    " ON" + " t." + COLUMN_TICKET_USER_ID + " = u." + COLUMN_ID +
+                " JOIN " + TABLE_EVENTS + " e" +
+                    " ON" + " t." + COLUMN_TICKET_EVENT_ID + " = e." + COLUMN_EVENT_ID +
+                " WHERE" + " t." + COLUMN_TICKET_USER_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                User user = new User(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))
+                );
+                Event event = new Event(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS))
+                );
+                Ticket ticket = new Ticket(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TICKET_ID)),
+                        user,
+                        event
+                );
+                tickets.add(ticket);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return tickets;
     }
 }

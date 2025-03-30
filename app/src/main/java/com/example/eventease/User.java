@@ -9,9 +9,12 @@ public class User {
     private String address;
     private String userType;
     private String imagePath;
+
     // Constructor
-
-
+    public User(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
     public User(String id, String name, String email, String phone, String password, String address, String userType, String imagePath) {
         this.id = id;
         this.name = name;
