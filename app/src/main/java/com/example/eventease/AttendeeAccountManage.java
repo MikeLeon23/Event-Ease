@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 
@@ -88,6 +89,10 @@ public class AttendeeAccountManage extends AppCompatActivity {
                 startActivity(new Intent(AttendeeAccountManage.this, MainActivity.class));
             }
         });
+
+        // Set up BottomNavigationView using the helper
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        NavigationHelper.setupBottomNavigation(this, bottomNavigationView);
     }
 
     // Handle the result of image selection from gallery

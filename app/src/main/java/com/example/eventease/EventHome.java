@@ -1,5 +1,6 @@
 package com.example.eventease;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -18,29 +19,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventHome extends AppCompatActivity {
+    private DBHelper dbHelper;
+    private EventAdapter adapter;
+    private TabLayout tabLayout;
+    private SharedPreferences prefs;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_home);
 
+        prefs = EventHome.this.getSharedPreferences("UserInfo", MODE_PRIVATE);
+        userId = prefs.getString("user_id", null);
+
         // Set up TabLayout
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout = findViewById(R.id.tab_layout);
         tabLayout.getTabAt(0).select(); // Select "ALL" tab by default
 
         // Set up RecyclerView
         RecyclerView recyclerView = findViewById(R.id.event_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<Event> events = new ArrayList<>();
-//        events.add(new Event("GIGI Comedy Show", "Wed, Feb 5, 9 p.m, Royal City"));
-        events.add(new Event("412341", "GIGI Comedy Show", "Royal City", "Wed, Feb 5",
-                "7 pm", 9.99, "\"Laugh Track\" is a high-energy, fast-paced comedy", "",
-        50, "http://example.com/asdfadf.jpg", "", "", false));
-        events.add(new Event("4123478", "Super Star Activity", "Royal City", "Wed, Feb 5",
-                "7 pm", 9.99, "\"Laugh Track\" is a high-energy, fast-paced comedy show", "",
-                50, "http://example.com/asdfadf.jpg", "", "", false));
+
+        dbHelper = new DBHelper(this);
+        List<Event> events = dbHelper.getAllActiveEventsByUserId(userId);
         // Initialize adapter with action listener
-        EventAdapter adapter = new EventAdapter(events, new EventAdapter.OnEventActionListener() {
+        adapter = new EventAdapter(this, events, new EventAdapter.OnEventActionListener() {
             @Override
             public void onEditClick(Event event, int position) {
                 Toast.makeText(EventHome.this, "Edit clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
@@ -55,14 +59,45 @@ public class EventHome extends AppCompatActivity {
 
             @Override
             public void onStarClick(Event event, int position) {
-                Toast.makeText(EventHome.this, "Star clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
-                // to do
+                boolean newStatus = !event.isInterested();
+                if (!event.isInterested()) {
+                    dbHelper.insertInterestedEvent(userId, event.getEventId());
+                } else {
+                    dbHelper.deleteInterestedEventById(userId, event.getEventId());
+                }
+                event.setInterested(newStatus);
+                updateEventList(); // Refresh the list after toggling
             }
         });
         recyclerView.setAdapter(adapter);
 
-        // Set up BottomNavigationView
+        // TabLayout listener for switching tabs
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                updateEventList();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        // Set up BottomNavigationView using the helper
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_events); // Highlight "Events"
+        NavigationHelper.setupBottomNavigation(this, bottomNavigationView);
+    }
+    // Method to update the event list based on the selected tab
+    private void updateEventList() {
+        int selectedTab = tabLayout.getSelectedTabPosition();
+        List<Event> events;
+        if (selectedTab == 0) {
+            events = dbHelper.getAllActiveEventsByUserId(userId); // ALL tab
+        } else {
+            events = dbHelper.getInterestedEventsByUserId(userId); // Interested tab
+        }
+        adapter.updateEvents(events);
     }
 }

@@ -4,16 +4,17 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
+import com.example.eventease.Notification;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "userProfile.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 10;
     public static final String COLUMN_IMAGE_PATH = "image_path"; // Store the image path here
 
     // USER PROFILE TABLE
@@ -42,6 +43,25 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ORGANIZER_ID = "organizer_id";
     public static final String COLUMN_CHECK = "event_checked";
 
+    // NOTIFICATIONS TABLE
+    public static final String TABLE_NOTIFICATIONS = "notifications";
+    public static final String COLUMN_NOTIFICATION_ID = "notification_id";
+    public static final String COLUMN_NOTIFICATION_EVENT_ID = "event_id";
+    public static final String COLUMN_NOTIFICATION_USER_ID = "user_id";
+    public static final String COLUMN_NOTIFICATION_MESSAGE = "message";
+    public static final String COLUMN_NOTIFICATION_STATUS = "status"; // pending, accepted, declined
+
+    // INTEREST TABLE
+    public static final String TABLE_INTERESTED_EVENTS = "interested_events";
+    public static final String COLUMN_INTEREST_ID = "interest_id";
+    public static final String COLUMN_INTEREST_USER_ID = "interest_user_id";
+    public static final String COLUMN_INTEREST_EVENT_ID = "interest_event_id";
+
+    // TICKET TABLE
+    public static final String TABLE_TICKET = "tickets";
+    public static final String COLUMN_TICKET_ID = "ticket_id";
+    public static final String COLUMN_TICKET_USER_ID = "ticket_user_id";
+    public static final String COLUMN_TICKET_EVENT_ID = "ticket_event_id";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -76,15 +96,156 @@ public class DBHelper extends SQLiteOpenHelper {
                 COLUMN_CHECK + " INTEGER)";
         db.execSQL(createEventTable);
 
+        // by liako created
+
+        String createNotificationTable = "CREATE TABLE " + TABLE_NOTIFICATIONS + " (" +
+                COLUMN_NOTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_NOTIFICATION_EVENT_ID + " INTEGER, " +
+                COLUMN_NOTIFICATION_USER_ID + " INTEGER, " +
+                COLUMN_NOTIFICATION_MESSAGE + " TEXT, " +
+                COLUMN_NOTIFICATION_STATUS + " TEXT DEFAULT 'pending', " +
+                "FOREIGN KEY (" + COLUMN_NOTIFICATION_EVENT_ID + ") REFERENCES " + TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "), " +
+                "FOREIGN KEY (" + COLUMN_NOTIFICATION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "))";
+        db.execSQL(createNotificationTable);
+
+        // Create Event Invitations Table
+        String CREATE_INVITATION_TABLE = "CREATE TABLE event_invitations (" +
+                "invitation_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "event_id INTEGER, " +
+                "email TEXT, " +
+                "status TEXT, " +
+                "FOREIGN KEY(event_id) REFERENCES events(event_id))";
+        db.execSQL(CREATE_INVITATION_TABLE);
+
+        // Create interested events table
+        String CREATE_INTERESTED_EVENT_TABLE = "CREATE TABLE " + TABLE_INTERESTED_EVENTS + "(" +
+                COLUMN_INTEREST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_INTEREST_USER_ID + " INTEGER, " +
+                COLUMN_INTEREST_EVENT_ID + " INTEGER, " +
+                "FOREIGN KEY (" + COLUMN_INTEREST_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "), " +
+                "FOREIGN KEY (" + COLUMN_INTEREST_EVENT_ID + ") REFERENCES " + TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "))";
+        db.execSQL(CREATE_INTERESTED_EVENT_TABLE);
+
+        // Create ticket table
+        String CREATE_TICKET_TABLE = "CREATE TABLE " + TABLE_TICKET + "(" +
+                COLUMN_TICKET_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_TICKET_USER_ID + " INTEGER, " +
+                COLUMN_TICKET_EVENT_ID + " INTEGER, " +
+                "FOREIGN KEY (" + COLUMN_TICKET_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "), " +
+                "FOREIGN KEY (" + COLUMN_TICKET_EVENT_ID + ") REFERENCES " + TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "))";
+        db.execSQL(CREATE_TICKET_TABLE);
+
         Log.d("DBHelper", "Database Created Successfully");
+    }
+
+
+
+//To track which users are invited to which events, add a method in your DBHelper class to store invitations.
+    public void saveEventInvitation(String eventId, String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("event_id", eventId);
+        values.put("email", email);
+        values.put("status", "pending");  // Default status of the invitation
+
+        long result = db.insert("event_invitations", null, values);
+        if (result == -1) {
+            Log.e("DBHelper", "Failed to save event invitation");
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS );
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTED_EVENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TICKET);
+
+        db.execSQL("DROP TABLE IF EXISTS event_invitations");
         onCreate(db);
     }
+
+// Whenever a new event is created, notifications should be sent to potential attendees.
+    public boolean sendNotification(int eventId, int userId, String message) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NOTIFICATION_EVENT_ID, eventId);
+        values.put(COLUMN_NOTIFICATION_USER_ID, userId);
+        values.put(COLUMN_NOTIFICATION_MESSAGE, message);
+        values.put(COLUMN_NOTIFICATION_STATUS, "pending"); // Default status
+
+        long result = db.insert(TABLE_NOTIFICATIONS, null, values);
+        db.close();
+        return result != -1;
+    }
+//fetch Pending Notifications for a User
+    public List<Notification> getNotificationsForUser(int userId) {
+        List<Notification> notifications = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NOTIFICATIONS, null, COLUMN_NOTIFICATION_USER_ID + "=? AND " + COLUMN_NOTIFICATION_STATUS + "=?",
+                new String[]{String.valueOf(userId), "pending"}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int notificationId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NOTIFICATION_ID));
+                int eventId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NOTIFICATION_EVENT_ID));
+                String message = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTIFICATION_MESSAGE));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTIFICATION_STATUS));
+
+                notifications.add(new Notification(notificationId, eventId, userId, message, status));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return notifications;
+    }
+
+//Allow the user to accept or decline a notification status and
+// update the ticket count for the event if the status is set to "accepted"
+
+    public boolean updateNotificationStatus(int notificationId, String status, Integer eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NOTIFICATION_STATUS, status);
+
+        long result = db.update(TABLE_NOTIFICATIONS, values, COLUMN_NOTIFICATION_ID + "=?", new String[]{String.valueOf(notificationId)});
+
+        if (status.equals("accepted") && eventId != null) {
+            // If the notification is accepted, update the ticket count for the event
+            db.execSQL("UPDATE " + TABLE_EVENTS + " SET " + COLUMN_EVENT_SEAT + " = " + COLUMN_EVENT_SEAT + " - 1 WHERE " + COLUMN_EVENT_ID + " = " + eventId);
+        }
+
+        db.close();
+        return result != -1;
+    }
+//public boolean updateNotificationStatus(int notificationId, String status) {
+//    SQLiteDatabase db = this.getWritableDatabase();
+//    ContentValues values = new ContentValues();
+//    values.put(COLUMN_NOTIFICATION_STATUS, status);
+//
+//    long result = db.update(TABLE_NOTIFICATIONS, values, COLUMN_NOTIFICATION_ID + "=?", new String[]{String.valueOf(notificationId)});
+//    db.close();
+//    return result != -1;
+//}
+
+//update ticket count
+//public boolean updateNotificationStatus(int notificationId, String status, int eventId) {
+//    SQLiteDatabase db = this.getWritableDatabase();
+//    ContentValues values = new ContentValues();
+//    values.put(COLUMN_NOTIFICATION_STATUS, status);
+//
+//    long result = db.update(TABLE_NOTIFICATIONS, values, COLUMN_NOTIFICATION_ID + "=?", new String[]{String.valueOf(notificationId)});
+//
+//    // If the user accepted, reduce the available seats
+//    if (status.equals("accepted")) {
+//        db.execSQL("UPDATE " + TABLE_EVENTS + " SET " + COLUMN_EVENT_SEAT + " = " + COLUMN_EVENT_SEAT + " - 1 WHERE " + COLUMN_EVENT_ID + " = " + eventId);
+//    }
+//
+//    db.close();
+//    return result != -1;
+//}
 
     // Insert user data into the database
     public boolean insertUserData(String name, String email, String phone, String password, String address, String userType, String imagePath) {
@@ -149,6 +310,37 @@ public class DBHelper extends SQLiteOpenHelper {
         return null; // Return null if no matching user was found
     }
 
+    // Method to load notifications based on logged-in user's email
+    public List<Notification> loadNotificationsByEmail(String email) {
+        List<Notification> notificationList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query to get event invitations based on the logged-in user's email
+        String query = "SELECT * FROM " + TABLE_NOTIFICATIONS + " WHERE email = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                // Ensure valid column indices
+                int invitationIdIndex = cursor.getColumnIndex("invitation_id");
+                int eventIdIndex = cursor.getColumnIndex("event_id");
+                int emailIndex = cursor.getColumnIndex("email");
+                int statusIndex = cursor.getColumnIndex("status");
+
+                if (invitationIdIndex != -1 && eventIdIndex != -1 && emailIndex != -1 && statusIndex != -1) {
+                    int invitationId = cursor.getInt(invitationIdIndex);
+                    int eventId = cursor.getInt(eventIdIndex);
+                    String status = cursor.getString(statusIndex);
+
+                    String message = "You are invited to event: " + eventId;
+                    notificationList.add(new Notification(invitationId, eventId, 0, message, status));
+                }
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return notificationList;
+    }
 
     public boolean updateUserData(String id, String name, String email, String phone, String password, String address, String imagePath) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -174,6 +366,7 @@ public class DBHelper extends SQLiteOpenHelper {
                                    double fee, String description, String reminder, int seat, String status, String imagePath, String organizerId, boolean isChecked) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+
         values.put(COLUMN_EVENT_NAME, name);
         values.put(COLUMN_EVENT_LOCATION, location);
         values.put(COLUMN_EVENT_DATE, date);
@@ -194,6 +387,33 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor getEventById(String eventId){
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(TABLE_EVENTS , null, COLUMN_EVENT_ID + " = ?", new String[]{eventId}, null, null, null);
+    }
+
+    public Event getEventObjById(String eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_EVENTS, null, "event_id = ?" + eventId, new String[]{eventId}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            Event event = new Event(
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) == 1
+            );
+            cursor.close();
+            return event;
+        }
+
+        return null;
     }
 
     public String getEventImagePath(String eventId) {
@@ -224,31 +444,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return imagePath;
     }
 
-//    public Event getEventById(String eventId) {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.query(TABLE_EVENTS, null, COLUMN_EVENT_ID + " = ?", new String[]{eventId}, null, null, null);
-//
-//        if (cursor != null && cursor.moveToFirst()) {
-//            Event event = new Event(
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
-//                    cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
-//                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
-//                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) == 1
-//            );
-//            cursor.close();
-//            return event;
-//        }
-//        return null;
-//    }
     public boolean updateEventData(String eventId, String name, String location, String date, String time,
                                    double fee, String description, String reminder, int seat, String status, String imagePath, String organizerId, boolean isChecked) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -424,4 +619,195 @@ public class DBHelper extends SQLiteOpenHelper {
         return events;
     }
 
+    public boolean insertInterestedEvent(String userId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_INTEREST_USER_ID, userId);
+        values.put(COLUMN_INTEREST_EVENT_ID, eventId);
+
+        long result = db.insert(TABLE_INTERESTED_EVENTS, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    public boolean deleteInterestedEventById(String userId, String eventId) {
+        // Validate inputs
+        if (userId == null || userId.trim().isEmpty() || eventId == null || eventId.trim().isEmpty()) {
+            return false;
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean success = false;
+
+        try {
+            int result = db.delete(TABLE_INTERESTED_EVENTS,
+                    COLUMN_INTEREST_USER_ID + " = ? AND " + COLUMN_INTEREST_EVENT_ID + " = ?",
+                    new String[]{userId, eventId});
+            success = result > 0;
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
+    public List<Event> getAllActiveEventsByUserId(String userId) {
+        List<Event> events = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query =  "SELECT e.*," +
+                " CASE" +
+                " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
+                " ELSE 0" +
+                " END AS is_interested" +
+                " FROM " + TABLE_EVENTS +" e" +
+                " LEFT JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
+                " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID + " AND ie." + COLUMN_INTEREST_USER_ID + " = ?" +
+                " WHERE e." + COLUMN_EVENT_STATUS + " = 'active'";
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Event event = new Event(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) ==1
+                );
+                event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
+                events.add(event);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        db.close();
+        return events;
+    }
+    public List<Event> getInterestedEventsByUserId(String userId) {
+        List<Event> events = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // SQL query to join event_info and interested_events tables
+        String query =  "SELECT e.*," +
+                " CASE" +
+                " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
+                " ELSE 0" +
+                " END AS is_interested" +
+                " FROM " + TABLE_EVENTS + " e" +
+                " INNER JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
+                " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID +
+                " WHERE ie." + COLUMN_INTEREST_USER_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Event event = new Event(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) ==1
+                );
+                event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
+                events.add(event);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return events;
+    }
+
+    public boolean insertTicket(String userId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TICKET_USER_ID, userId);
+        values.put(COLUMN_TICKET_EVENT_ID, eventId);
+
+        long result = db.insert(TABLE_TICKET, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    public boolean deleteTicket(String userId, String eventId) {
+        // Validate inputs
+        if (userId == null || userId.trim().isEmpty() || eventId == null || eventId.trim().isEmpty()) {
+            return false;
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean success = false;
+
+        try {
+            int result = db.delete(TABLE_TICKET,
+                    COLUMN_TICKET_USER_ID + " = ? AND " + COLUMN_TICKET_EVENT_ID + " = ?",
+                    new String[]{userId, eventId});
+            success = result > 0;
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
+    public List<Ticket> getTicketsByUserId(String userId) {
+        List<Ticket> tickets = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query =  "SELECT t." + COLUMN_TICKET_ID +
+                ", u.*" +
+                ", e.*" +
+                " FROM " + TABLE_TICKET + " t" +
+                " JOIN " + TABLE_USERS + " u" +
+                    " ON" + " t." + COLUMN_TICKET_USER_ID + " = u." + COLUMN_ID +
+                " JOIN " + TABLE_EVENTS + " e" +
+                    " ON" + " t." + COLUMN_TICKET_EVENT_ID + " = e." + COLUMN_EVENT_ID +
+                " WHERE" + " t." + COLUMN_TICKET_USER_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                User user = new User(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))
+                );
+                Event event = new Event(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS))
+                );
+                Ticket ticket = new Ticket(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TICKET_ID)),
+                        user,
+                        event
+                );
+                tickets.add(ticket);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return tickets;
+    }
 }

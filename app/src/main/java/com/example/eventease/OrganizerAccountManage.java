@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 
@@ -48,10 +49,6 @@ public class OrganizerAccountManage extends AppCompatActivity {
         imageView = findViewById(R.id.imageOrg);
         tvActEveOrgCount = findViewById(R.id.tvActEveOrgCount); //to be done when have time
         TextView btnSignOut = findViewById(R.id.btnSignOut);
-
-        Button btnEvents = findViewById(R.id.btnEvent);
-        Button btnTickets = findViewById(R.id.btnTicket);
-        Button btnAccount = findViewById(R.id.btnAccount);
 
         dbHelper = new DBHelper(this);
         organizerId = getIntent().getStringExtra("COLUMN_ID");
@@ -95,6 +92,10 @@ public class OrganizerAccountManage extends AppCompatActivity {
                 startActivity(new Intent(OrganizerAccountManage.this, MainActivity.class));
             }
         });
+
+        // Set up BottomNavigationView using the helper
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        NavigationHelper.setupBottomNavigation(this, bottomNavigationView);
 
 //        imageView.setOnClickListener(v -> requestStoragePermission());
     }

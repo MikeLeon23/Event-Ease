@@ -1,5 +1,7 @@
 package com.example.eventease;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
     private List<Event> eventList;
+    private Context context;
     private OnEventActionListener actionListener;
 
     // Interface for handling edit and delete actions
@@ -22,9 +26,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         void onStarClick(Event event, int position);
     }
 
-    public EventAdapter(List<Event> eventList, OnEventActionListener actionListener) {
-        this.eventList = eventList;
+    public EventAdapter(Context context, List<Event> eventList, OnEventActionListener actionListener) {
+        this.eventList = eventList != null ? eventList : new ArrayList<>();
         this.actionListener = actionListener;
+        this.context = context;
+    }
+
+    public void updateEvents(List<Event> newEvents) {
+        this.eventList = newEvents != null ? newEvents : new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -40,6 +50,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         Event event = eventList.get(position);
         holder.titleTextView.setText(event.getEventName());
         holder.detailsTextView.setText(event.getEventDate() + ", " + event.getEventTime() + ", " + event.getEventLocation());
+
+        // Set star icon based on isInterested
+        holder.starIcon.setImageResource(event.isInterested() ?
+                R.drawable.ic_star_fill : R.drawable.ic_star);
 
         // Set click listeners for edit and delete icons
         holder.editIcon.setOnClickListener(v -> {
@@ -58,6 +72,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             if (actionListener != null) {
                 actionListener.onStarClick(event, position);
             }
+        });
+
+        // Set click listener for the entire card
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, EventDetail.class);
+            intent.putExtra("event_id", event.getEventId()); // Pass the event ID
+            context.startActivity(intent);
         });
     }
 
