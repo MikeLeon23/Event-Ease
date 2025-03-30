@@ -24,36 +24,11 @@
         android:id="@+id/listViewAttendeeAccount"
         android:layout_width="297dp"
         android:layout_height="152dp"
-        android:layout_marginTop="288dp"
+        android:layout_marginTop="352dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.403"
+        app:layout_constraintHorizontal_bias="0.407"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvLegal"
-        android:layout_width="93dp"
-        android:layout_height="30dp"
-        android:text="@string/tvLegal"
-        android:textSize="24sp"
-        android:textStyle="bold|italic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.171"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ListView
-        android:id="@+id/listViewLegal"
-        android:layout_width="282dp"
-        android:layout_height="135dp"
-        android:layout_marginBottom="152dp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.396"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.875" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -147,8 +122,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintAttendeeLayout"
-        android:layout_width="352dp"
-        android:layout_height="123dp"
+        android:layout_width="368dp"
+        android:layout_height="166dp"
         android:layout_marginTop="148dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

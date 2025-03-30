@@ -22,19 +22,50 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.143" />
 
+    <LinearLayout
+        android:id="@+id/btnGoBack"
+        android:layout_width="104dp"
+        android:layout_height="47dp"
+        android:layout_marginEnd="52dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+        app:layout_constraintHorizontal_bias="0.693"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.784">
+
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/turnback"
+            android:tint="@color/black"
+            tools:ignore="ExtraText,UseAppTint" />
+
+        <TextView
+            android:id="@+id/btnTurnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:text="@string/btnBack"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="168dp"
+        android:layout_marginEnd="68dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.774">
+        app:layout_constraintVertical_bias="0.784">
 
         <ImageView
             android:layout_width="28dp"
@@ -294,6 +325,7 @@
         android:ems="10"
         android:hint="@string/lbEnter"
         android:inputType="text"
+        android:password="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.731"

@@ -15,9 +15,12 @@ public class Event {
 
     private String eventStatus;
 
-    public Event(String eventId, String eventName, String eventLocation, String eventDate,
-                 String eventTime, double eventFee, String eventDescription, String eventReminder,
-                 int eventSeat, String eventImagePath, String eventStatus) {
+    private String organizerId;
+
+    private boolean isChecked;
+
+    public Event(String eventId, String eventName, String eventLocation, String eventDate, String eventTime, double eventFee, String eventDescription,
+                 String eventReminder, int eventSeat, String eventImagePath, String eventStatus, String organizerId, boolean isChecked) {
         this.eventId = eventId;
         this.eventName = eventName;
         this.eventLocation = eventLocation;
@@ -29,6 +32,8 @@ public class Event {
         this.eventSeat = eventSeat;
         this.eventImagePath = eventImagePath;
         this.eventStatus = eventStatus;
+        this.organizerId = organizerId;
+        this.isChecked = isChecked;
     }
 
     public String getEventId() {
@@ -117,5 +122,21 @@ public class Event {
 
     public void setEventStatus(String eventStatus) {
         this.eventStatus = eventStatus;
+    }
+
+    public String getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(String organizerId) {
+        this.organizerId = organizerId;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 }
