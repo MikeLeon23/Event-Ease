@@ -31,9 +31,6 @@
             android:name=".EventHome"
             android:exported="false" />
         <activity
-            android:name=".Login"
-            android:exported="false" />
-        <activity
             android:name=".UserAccountCreation"
             android:exported="false" />
         <activity
@@ -51,7 +48,7 @@
         <activity
             android:name=".OrganizerPastEvents"
             android:exported="false" />
-        <activity android:name=".OrganizerEventDetail" />
+        <activity android:name=".OrganizerEventUpdate" />
         <activity
             android:name=".OrganizerProfileUpdate"
             android:exported="false" />

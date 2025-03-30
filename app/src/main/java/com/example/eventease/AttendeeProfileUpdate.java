@@ -42,7 +42,7 @@ public class AttendeeProfileUpdate extends AppCompatActivity {
         edAddress = findViewById(R.id.edAttAddress);
         imageView = findViewById(R.id.imageView);
         btnUploadImage = findViewById(R.id.btnEvnImgUpload);
-        btnUpdate = findViewById(R.id.btnOrgUpdate);
+        btnUpdate = findViewById(R.id.btnEventDelete);
         btnGoBack = findViewById(R.id.btnTurnBack);
 
         dbHelper = new DBHelper(this);
@@ -116,6 +116,11 @@ public class AttendeeProfileUpdate extends AppCompatActivity {
         String phone = edPhone.getText().toString().trim();
         String password = edPassword.getText().toString().trim();
         String address = edAddress.getText().toString().trim();
+
+        // If no new image is selected, keep the old image path
+        if (imagePath == null || imagePath.isEmpty()) {
+            imagePath = dbHelper.getUserImagePath(attendeeId);
+        }
 
         // Update the user data in the database with the image path
         boolean result = dbHelper.updateUserData(attendeeId, name, email, phone, password, address, imagePath);

@@ -2,7 +2,7 @@
     <string name="app_name">Event Ease</string>
 
     <!--  User Account Creation  -->
-    <string name="lbAccCreate">ACCOUNT CREATION</string>
+    <string name="lbAccCreate">ACCOUNT REGISTRATION</string>
     <string name="lbUserType">User Type:</string>
     <string-array name="spUserType">
         <item>Attendee</item>
@@ -11,10 +11,12 @@
     <string name="btnCreate">Create</string>
 
     <!--  User Login  -->
-    <string name="lbLogin">ACCOUNT LOG_IN</string>
+    <string name="lbLogin">WELCOME</string>
     <string name="btnLogin">Login</string>
     <string name="lbEmailLogin">Enter email</string>
     <string name="lbPassLogin">Enter password</string>
+    <string name="btnForgotPassword">Forgot password</string>
+    <string name="btnCreateNewAccount">Create new account</string>
 
 
     <!--  Account management  -->
@@ -69,8 +71,25 @@
         <item>1 week before</item>
     </string-array>
     <string name="lbEventSeats">Seats:</string>
+    <string-array name="spEventStatus">
+        <item>draft</item>
+        <item>enable</item>
+    </string-array>
     <string name="btnSubmit">Submit</string>
 
     <!--    Events List-->
     <string name="btnEventList">Event List</string>
+    <string name="btnEventDelete">Delete</string>
+
+    <!--    Update an Event -->
+    <string name="lbEventUpdate">EVENT UPDATE</string>
+    <string name="btnEventUpdate">Update</string>
+    <string name="lbEventStatus">Status</string>
+    <string name="btnAttendeeList">Attendee</string>
+    <string-array name="spEventStatusUpdate">
+        <item>draft</item>
+        <item>enable</item>
+        <item>disable</item>
+    </string-array>
+
 </resources>

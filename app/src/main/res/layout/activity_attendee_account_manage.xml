@@ -7,19 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".AttendeeAccountManage">
 
-    <ImageView
-        android:id="@+id/notificationsButton"
-        android:layout_width="33dp"
-        android:layout_height="37dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="Notifications"
-        android:src="@drawable/notificationicon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
@@ -40,26 +27,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvLegal" />
-
-    <TextView
-        android:id="@+id/tvLegal"
-        android:layout_width="93dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="24dp"
-        android:text="@string/tvLegal"
-        android:textSize="24sp"
-        android:textStyle="bold|italic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listViewLegal" />
-
-    <ListView
-        android:id="@+id/listViewLegal"
-        android:layout_width="376dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout7"

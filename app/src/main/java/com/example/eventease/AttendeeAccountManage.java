@@ -43,14 +43,14 @@ public class AttendeeAccountManage extends AppCompatActivity {
         });
 
         ListView listViewAccount = findViewById(R.id.listViewAttendeeAccount);
-        ListView listViewLegal = findViewById(R.id.listViewLegal);
-
-        // Notifications Button
-        ImageView notificationsButton = findViewById(R.id.notificationsButton);
 
         tvAttName = findViewById(R.id.tvAttendeeName);
         imageView = findViewById(R.id.imageAttendee);
         TextView btnSignOut = findViewById(R.id.btnSignOut);
+
+        Button btnEvents = findViewById(R.id.btnEvent);
+        Button btnTickets = findViewById(R.id.btnTicket);
+        Button btnAccount = findViewById(R.id.btnAccount);
 
         dbHelper = new DBHelper(this);
         attendeeId = getIntent().getStringExtra("COLUMN_ID");
@@ -59,8 +59,6 @@ public class AttendeeAccountManage extends AppCompatActivity {
         String[] account = {"Profile Management", "Active Events", "Past Events"};
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, account);
         listViewAccount.setAdapter(adapter1);
-
-
         listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -84,38 +82,11 @@ public class AttendeeAccountManage extends AppCompatActivity {
             }
         });
 
-        notificationsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AttendeeAccountManage.this, NotificationActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        String[] legal = {"Term  of services", "Privacy", "Accessibility"};
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, legal);
-        listViewLegal.setAdapter(adapter2);
-        listViewLegal.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
-                    case 0:
-//                        startActivity(new Intent(MainActivity.this)); term page
-                        break;
-                    case 1:
-//                        startActivity(new Intent(MainActivity.this)); privacy page
-                        break;
-                    case 2:
-//                        startActivity(new Intent(MainActivity.this)); accessibility page
-                        break;
-                }
-            }
-        });
 
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AttendeeAccountManage.this, Login.class));
+                startActivity(new Intent(AttendeeAccountManage.this, MainActivity.class));
             }
         });
 
@@ -154,6 +125,4 @@ public class AttendeeAccountManage extends AppCompatActivity {
         }
         cursor.close();
     }
-
-
 }

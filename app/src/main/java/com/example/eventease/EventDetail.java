@@ -43,7 +43,7 @@ public class EventDetail extends AppCompatActivity {
     }
 
     private void loadEventData(String eventId) {
-        Event event = dbHelper.getEventById(eventId);
+        Event event = dbHelper.getEventObjById(eventId);
         if (event != null) {
             // Set event title
             TextView title = findViewById(R.id.event_title);
