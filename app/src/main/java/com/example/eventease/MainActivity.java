@@ -1,6 +1,7 @@
 package com.example.eventease;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -64,7 +65,20 @@ public class MainActivity extends AppCompatActivity {
         User user = dbHelper.getUserByUsernameAndPassword(username, password);
 
         if (user != null) {
+            // Save user information using SharedPreferences
+            SharedPreferences sharedPreferences = getSharedPreferences("UserInfo",
+                    MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("user_id", user.getId());
+            editor.putString("user_name", user.getName());
+            editor.putString("user_type", user.getUserType());
+            editor.commit();
 
+            //Store email in SharedPreferences when login is successful
+            sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            editor = sharedPreferences.edit();
+            editor.putString("user_email", user.getEmail()); // Store the email from the user object
+            editor.apply();
             if(user.getUserType().equals("Attendee")){
                 // Successful login, navigate to profile update page or main screen
                 Intent intent = new Intent(MainActivity.this, AttendeeAccountManage.class);
