@@ -2,6 +2,7 @@ package com.example.eventease;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ public class EventDetail extends AppCompatActivity {
 
     private void loadEventData(String eventId) {
         Event event = dbHelper.getEventObjById(eventId);
+        Log.d("Zhihao", "zhihao: " + eventId);
         if (event != null) {
             // Set event title
             TextView title = findViewById(R.id.event_title);
