@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -26,12 +29,18 @@ public class EventHome extends AppCompatActivity {
     private TabLayout tabLayout;
     private SharedPreferences prefs;
     private String userId;
+    private EditText searchText;
+    private ImageView menuIcon;
+    private ImageView searchIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_home);
 
+        menuIcon = findViewById(R.id.hamburger_menu);
+        searchText = findViewById(R.id.search_text);
+        searchIcon = findViewById(R.id.search_icon);
         prefs = EventHome.this.getSharedPreferences("UserInfo", MODE_PRIVATE);
         userId = prefs.getString("user_id", null);
 
@@ -44,7 +53,7 @@ public class EventHome extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         dbHelper = new DBHelper(this);
-        List<Event> events = dbHelper.getAllActiveEventsByUserId(userId);
+        List<Event> events = dbHelper.getAllActiveEventsByUserId(userId, null);
         // Initialize adapter with action listener
         adapter = new EventAdapter(this, events, new EventAdapter.OnEventActionListener() {
             @Override
@@ -90,15 +99,24 @@ public class EventHome extends AppCompatActivity {
         // Set up BottomNavigationView using the helper
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         NavigationHelper.setupBottomNavigation(this, bottomNavigationView);
+
+        String str = searchText.getText().toString();
+        searchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateEventList();
+            }
+        });
     }
     // Method to update the event list based on the selected tab
     private void updateEventList() {
+        String str = searchText.getText().toString();
         int selectedTab = tabLayout.getSelectedTabPosition();
         List<Event> events;
         if (selectedTab == 0) {
-            events = dbHelper.getAllActiveEventsByUserId(userId); // ALL tab
+            events = dbHelper.getAllActiveEventsByUserId(userId, str); // ALL tab
         } else {
-            events = dbHelper.getInterestedEventsByUserId(userId); // Interested tab
+            events = dbHelper.getInterestedEventsByUserId(userId, str); // Interested tab
         }
         adapter.updateEvents(events);
     }

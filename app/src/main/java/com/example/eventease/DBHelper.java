@@ -651,7 +651,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return success;
     }
 
-    public List<Event> getAllActiveEventsByUserId(String userId) {
+    public List<Event> getAllActiveEventsByUserId(String userId, String searchString) {
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -664,7 +664,18 @@ public class DBHelper extends SQLiteOpenHelper {
                 " LEFT JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
                 " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID + " AND ie." + COLUMN_INTEREST_USER_ID + " = ?" +
                 " WHERE e." + COLUMN_EVENT_STATUS + " = 'enable'";
-        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        // Add search condition for eventName if searchString is not null or empty
+        List<String> selectionArgs = new ArrayList<>();
+        selectionArgs.add(userId); // Add userId as the first argument for the JOIN condition
+
+        if (searchString != null && !searchString.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_NAME + " LIKE ?";
+            // Use % to match partial strings, and make it case-insensitive by converting both sides to lowercase in the query
+            selectionArgs.add("%" + searchString.trim() + "%");
+        }
+
+        Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -691,7 +702,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return events;
     }
-    public List<Event> getInterestedEventsByUserId(String userId) {
+    public List<Event> getInterestedEventsByUserId(String userId, String searchString) {
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -706,7 +717,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID +
                 " WHERE ie." + COLUMN_INTEREST_USER_ID + " = ?";
 
-        Cursor cursor = db.rawQuery(query, new String[]{userId});
+        // Add search condition for eventName if searchString is not null or empty
+        List<String> selectionArgs = new ArrayList<>();
+        selectionArgs.add(userId); // Add userId as the first argument for the JOIN condition
+
+        if (searchString != null && !searchString.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_NAME + " LIKE ?";
+            // Use % to match partial strings, and make it case-insensitive by converting both sides to lowercase in the query
+            selectionArgs.add("%" + searchString.trim() + "%");
+        }
+
+        Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
