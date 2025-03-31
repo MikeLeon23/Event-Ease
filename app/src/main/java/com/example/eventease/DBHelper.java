@@ -14,7 +14,7 @@ import java.util.List;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "userProfile.db";
-    private static final int DATABASE_VERSION = 12;
+    private static final int DATABASE_VERSION = 13;
     public static final String COLUMN_IMAGE_PATH = "image_path"; // Store the image path here
 
     // USER PROFILE TABLE
@@ -663,7 +663,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 " FROM " + TABLE_EVENTS +" e" +
                 " LEFT JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
                 " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID + " AND ie." + COLUMN_INTEREST_USER_ID + " = ?" +
-                " WHERE e." + COLUMN_EVENT_STATUS + " = 'active'";
+                " WHERE e." + COLUMN_EVENT_STATUS + " = 'enable'";
         Cursor cursor = db.rawQuery(query, new String[]{userId});
 
         if (cursor != null && cursor.moveToFirst()) {
