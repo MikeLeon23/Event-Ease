@@ -391,7 +391,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Event getEventObjById(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_EVENTS, null, "event_id = ?" + eventId, new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TABLE_EVENTS, null, "event_id = ?", new String[]{eventId}, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             Event event = new Event(
