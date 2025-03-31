@@ -651,28 +651,37 @@ public class DBHelper extends SQLiteOpenHelper {
         return success;
     }
 
-    public List<Event> getAllActiveEventsByUserId(String userId, String searchString) {
+    public List<Event> getAllActiveEventsByUserId(String userId, String eventName, String eventDate, String organizerName) {
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query =  "SELECT e.*," +
+        String query = "SELECT e.*, " +
                 " CASE" +
                 " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
                 " ELSE 0" +
                 " END AS is_interested" +
-                " FROM " + TABLE_EVENTS +" e" +
+                " FROM " + TABLE_EVENTS + " e" +
                 " LEFT JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
                 " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID + " AND ie." + COLUMN_INTEREST_USER_ID + " = ?" +
+                " LEFT JOIN " + TABLE_USERS + " u" +
+                " ON e." + COLUMN_ORGANIZER_ID + " = u." + COLUMN_ID +
                 " WHERE e." + COLUMN_EVENT_STATUS + " = 'enable'";
 
-        // Add search condition for eventName if searchString is not null or empty
+        // Add search conditions
         List<String> selectionArgs = new ArrayList<>();
         selectionArgs.add(userId); // Add userId as the first argument for the JOIN condition
 
-        if (searchString != null && !searchString.trim().isEmpty()) {
+        if (eventName != null && !eventName.trim().isEmpty()) {
             query += " AND e." + COLUMN_EVENT_NAME + " LIKE ?";
-            // Use % to match partial strings, and make it case-insensitive by converting both sides to lowercase in the query
-            selectionArgs.add("%" + searchString.trim() + "%");
+            selectionArgs.add("%" + eventName.trim() + "%");
+        }
+        if (eventDate != null && !eventDate.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_DATE + " = ?";
+            selectionArgs.add(eventDate.trim());
+        }
+        if (organizerName != null && !organizerName.trim().isEmpty()) {
+            query += " AND u." + COLUMN_NAME + " LIKE ?";
+            selectionArgs.add("%" + organizerName.trim() + "%");
         }
 
         Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
@@ -692,7 +701,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) ==1
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) == 1
                 );
                 event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
                 events.add(event);
@@ -702,12 +711,11 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return events;
     }
-    public List<Event> getInterestedEventsByUserId(String userId, String searchString) {
+    public List<Event> getInterestedEventsByUserId(String userId, String eventName, String eventDate, String organizerName) {
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // SQL query to join event_info and interested_events tables
-        String query =  "SELECT e.*," +
+        String query = "SELECT e.*, " +
                 " CASE" +
                 " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
                 " ELSE 0" +
@@ -715,16 +723,25 @@ public class DBHelper extends SQLiteOpenHelper {
                 " FROM " + TABLE_EVENTS + " e" +
                 " INNER JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
                 " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID +
+                " LEFT JOIN " + TABLE_USERS + " u" +
+                " ON e." + COLUMN_ORGANIZER_ID + " = u." + COLUMN_ID +
                 " WHERE ie." + COLUMN_INTEREST_USER_ID + " = ?";
 
-        // Add search condition for eventName if searchString is not null or empty
+        // Add search conditions
         List<String> selectionArgs = new ArrayList<>();
         selectionArgs.add(userId); // Add userId as the first argument for the JOIN condition
 
-        if (searchString != null && !searchString.trim().isEmpty()) {
+        if (eventName != null && !eventName.trim().isEmpty()) {
             query += " AND e." + COLUMN_EVENT_NAME + " LIKE ?";
-            // Use % to match partial strings, and make it case-insensitive by converting both sides to lowercase in the query
-            selectionArgs.add("%" + searchString.trim() + "%");
+            selectionArgs.add("%" + eventName.trim() + "%");
+        }
+        if (eventDate != null && !eventDate.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_DATE + " = ?";
+            selectionArgs.add(eventDate.trim());
+        }
+        if (organizerName != null && !organizerName.trim().isEmpty()) {
+            query += " AND u." + COLUMN_NAME + " LIKE ?";
+            selectionArgs.add("%" + organizerName.trim() + "%");
         }
 
         Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
@@ -744,7 +761,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) ==1
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) == 1
                 );
                 event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
                 events.add(event);

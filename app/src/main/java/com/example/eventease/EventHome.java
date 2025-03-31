@@ -2,25 +2,22 @@ package com.example.eventease;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventHome extends AppCompatActivity {
@@ -29,18 +26,24 @@ public class EventHome extends AppCompatActivity {
     private TabLayout tabLayout;
     private SharedPreferences prefs;
     private String userId;
-    private EditText searchText;
-    private ImageView menuIcon;
-    private ImageView searchIcon;
+    private EditText searchText, searchDate, searchOrganizer;
+    private ImageView arrowToggle, searchIcon;
+    private LinearLayout additionalSearchFields;
+    private boolean isSearchExpanded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_home);
 
-        menuIcon = findViewById(R.id.hamburger_menu);
+        // Initialize views
         searchText = findViewById(R.id.search_text);
+        searchDate = findViewById(R.id.search_date);
+        searchOrganizer = findViewById(R.id.search_organizer);
+        arrowToggle = findViewById(R.id.arrow_toggle);
         searchIcon = findViewById(R.id.search_icon);
+        additionalSearchFields = findViewById(R.id.additional_search_fields);
+
         prefs = EventHome.this.getSharedPreferences("UserInfo", MODE_PRIVATE);
         userId = prefs.getString("user_id", null);
 
@@ -53,19 +56,16 @@ public class EventHome extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         dbHelper = new DBHelper(this);
-        List<Event> events = dbHelper.getAllActiveEventsByUserId(userId, null);
-        // Initialize adapter with action listener
+        List<Event> events = dbHelper.getAllActiveEventsByUserId(userId, null, null, null);
         adapter = new EventAdapter(this, events, new EventAdapter.OnEventActionListener() {
             @Override
             public void onEditClick(Event event, int position) {
                 Toast.makeText(EventHome.this, "Edit clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
-                // to do
             }
 
             @Override
             public void onDeleteClick(Event event, int position) {
                 Toast.makeText(EventHome.this, "Delete clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
-                // to do
             }
 
             @Override
@@ -77,7 +77,7 @@ public class EventHome extends AppCompatActivity {
                     dbHelper.deleteInterestedEventById(userId, event.getEventId());
                 }
                 event.setInterested(newStatus);
-                updateEventList(); // Refresh the list after toggling
+                updateEventList();
             }
         });
         recyclerView.setAdapter(adapter);
@@ -96,27 +96,86 @@ public class EventHome extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // Set up BottomNavigationView using the helper
+        // Set up BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         NavigationHelper.setupBottomNavigation(this, bottomNavigationView);
 
-        String str = searchText.getText().toString();
-        searchIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateEventList();
+        // Arrow toggle click listener
+        arrowToggle.setOnClickListener(v -> {
+            if (isSearchExpanded) {
+                // Collapse the additional fields
+                additionalSearchFields.setVisibility(View.GONE);
+                arrowToggle.setImageResource(R.drawable.ic_arrow_down);
+                // Clear the additional fields
+                searchDate.setText("");
+                searchOrganizer.setText("");
+                isSearchExpanded = false;
+                updateEventList(); // Refresh the list with cleared criteria
+            } else {
+                // Expand the additional fields
+                additionalSearchFields.setVisibility(View.VISIBLE);
+                arrowToggle.setImageResource(R.drawable.ic_arrow_up);
+                isSearchExpanded = true;
             }
         });
+
+        // Search icon click listener
+        searchIcon.setOnClickListener(v -> updateEventList());
+
+        // Set up clear functionality for EditText fields
+        setupClearButton(searchText);
+        setupClearButton(searchDate);
+        setupClearButton(searchOrganizer);
     }
-    // Method to update the event list based on the selected tab
+
+    // Method to set up clear button functionality for an EditText
+    private void setupClearButton(EditText editText) {
+        // Show/hide clear button based on text input
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Toggle the visibility of the clear icon by changing its tint
+                editText.setCompoundDrawableTintList(ContextCompat.getColorStateList(
+                        EventHome.this,
+                        s.length() > 0 ? android.R.color.black : android.R.color.transparent
+                ));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Clear text when the clear button (drawableEnd) is clicked
+        editText.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                // Check if the touch is on the drawableEnd (right side)
+                if (event.getRawX() >= (editText.getRight() - editText.getCompoundDrawables()[2].getBounds().width() - editText.getPaddingRight())) {
+                    editText.setText("");
+                    updateEventList(); // Refresh the list after clearing
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    // Method to update the event list based on the selected tab and search criteria
     private void updateEventList() {
-        String str = searchText.getText().toString();
+        String eventName = searchText.getText().toString().trim();
+        String eventDate = searchDate.getText().toString().trim();
+        String organizerName = searchOrganizer.getText().toString().trim();
         int selectedTab = tabLayout.getSelectedTabPosition();
         List<Event> events;
+
         if (selectedTab == 0) {
-            events = dbHelper.getAllActiveEventsByUserId(userId, str); // ALL tab
+            // ALL tab: Search all active events with the given criteria
+            events = dbHelper.getAllActiveEventsByUserId(userId, eventName, eventDate, organizerName);
         } else {
-            events = dbHelper.getInterestedEventsByUserId(userId, str); // Interested tab
+            // Interested tab: Search interested events with the given criteria
+            events = dbHelper.getInterestedEventsByUserId(userId, eventName, eventDate, organizerName);
         }
         adapter.updateEvents(events);
     }
