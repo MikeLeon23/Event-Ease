@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 public class OrganizerPastEvents extends AppCompatActivity {
 
@@ -60,6 +62,19 @@ public class OrganizerPastEvents extends AppCompatActivity {
                 startActivity(new Intent(OrganizerPastEvents.this, OrganizerAccountManage.class));
             }
         });
+        btnAttendeeList = findViewById(R.id.btnAttendeeListPast);
+        btnAttendeeList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Set<String> selectedIds = adapter.getSelectedEventIds();
+                if (selectedIds.isEmpty()) {
+                    Toast.makeText(OrganizerPastEvents.this, "No attendee selected", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                loadAttendeeList(organizerId);
+
+            }
+        });
     }
 
     private void loadUserData(String id) {
@@ -93,6 +108,36 @@ public class OrganizerPastEvents extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
         } else {
             adapter.updateEvents(pastEvents);
+        }
+    }
+
+    private void loadAttendeeList(String organizerId) {
+        Set<String> selectedIds = adapter.getSelectedEventIds();
+
+        if (selectedIds.isEmpty()) {
+            Toast.makeText(OrganizerPastEvents.this, "No events selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Assuming you select one event for now, get the first event's ID and name
+        String eventId = selectedIds.iterator().next();  // Get the first selected event ID
+
+        Cursor event = dbHelper.getEventById(eventId);  // Retrieve the event name from the database
+        if (event != null && event.moveToFirst()) {
+            // Cursor is not empty, and we've moved to the first row
+            String eventName = event.getString(event.getColumnIndexOrThrow("event_name"));
+            String eventStatus = event.getString(event.getColumnIndexOrThrow("event_status"));
+
+            // Now you can use the eventName as needed
+            Intent intent = new Intent(OrganizerPastEvents.this, OrganizerViewListAttendee.class);
+            intent.putExtra("ORGANIZER_ID", organizerId);
+            intent.putExtra("EVENT_NAME", eventName);
+            intent.putExtra("EVENT_ID", eventId);
+            intent.putExtra("EVENT_STATUS", eventStatus);
+            startActivity(intent);
+        } else {
+            // Handle the case where the event was not found or the cursor is empty
+            Toast.makeText(OrganizerPastEvents.this, "Event not found", Toast.LENGTH_SHORT).show();
         }
     }
 

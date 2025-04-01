@@ -19,12 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AttendeeActiveEvents extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    OrganizerListEventAdapter adapter;
+    AttendeeListEventAdapter adapter;
     DBHelper dbHelper;
     String attendeeId;
     TextView tvAttendeeName, tvEventCount , btnGoBack;
@@ -52,7 +53,7 @@ public class AttendeeActiveEvents extends AppCompatActivity {
         dbHelper = new DBHelper(this);
         attendeeId = getIntent().getStringExtra("COLUMN_ID");
         loadUserData(attendeeId);
-//        loadActiveEvents(attendeeId);
+        loadActiveEvents(attendeeId);
 
         btnGoBack = findViewById(R.id.btnGoBack);
         btnGoBack.setOnClickListener(new View.OnClickListener() {
@@ -88,22 +89,32 @@ public class AttendeeActiveEvents extends AppCompatActivity {
     }
 
     private void loadActiveEvents(String attendeeId) {
-        List<Event> activeEvents = dbHelper.getActiveEventsByAttendee(attendeeId);
-        Log.d("AttendeeActiveEvents", "Total active events loaded: " + activeEvents.size());
+        List<Ticket> tickets = dbHelper.getTicketsByUserId(attendeeId);
+        Log.d("AttendeeActiveEvents", "Total active events loaded: " + tickets.size());
 
-        for (Event event : activeEvents) {
-            Log.d("AttendeeActiveEvents", "Event ID: " + event.getEventId() + ", Name: " + event.getEventName());
+//        for (Ticket ticket : tickets) {
+//            Log.d("AttendeeActiveEvents", "Event ID: " + ticket.getEvent().getEventId() + ", Name: " + ticket.getEvent().getEventName());
+//        }
+
+        // Extract list of events from the tickets
+        List<Event> events = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            Event event = ticket.getEvent();
+            if ("enable".equalsIgnoreCase(event.getEventStatus())) { // Only add enable events
+                Log.d("AttendeePastEvents", "Event ID: " + event.getEventId() +
+                        ", Name: " + event.getEventName() +
+                        ", Status: " + event.getEventStatus());
+                events.add(event);
+            }
         }
-
-        tvEventCount.setText("Total " + activeEvents.size() + " events");
+        tvEventCount.setText("Total " + events.size() + " events");
 
         if (adapter == null) {
-            adapter = new OrganizerListEventAdapter(activeEvents, this);
+            adapter = new AttendeeListEventAdapter(events, this);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(adapter);
         } else {
-            adapter.updateEvents(activeEvents);
+            adapter.updateEvents(events);
         }
     }
-
 }

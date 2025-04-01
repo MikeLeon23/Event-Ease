@@ -100,7 +100,7 @@ public class OrganizerEventCreation extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedReminder = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(), "Reminder selected: " + selectedReminder, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Reminder selected: " + selectedReminder, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -113,7 +113,7 @@ public class OrganizerEventCreation extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedStatus = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(), "Status selected: " + selectedStatus, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Status selected: " + selectedStatus, Toast.LENGTH_SHORT).show();
             }
 
             @Override

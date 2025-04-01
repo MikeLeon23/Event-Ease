@@ -86,6 +86,7 @@
     <string name="btnEventUpdate">Update</string>
     <string name="lbEventStatus">Status</string>
     <string name="btnAttendeeList">Attendee</string>
+    <string name="lbAttendeeList">LIST OF ATTENDEES</string>
     <string-array name="spEventStatusUpdate">
         <item>draft</item>
         <item>enable</item>

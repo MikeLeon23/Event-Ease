@@ -16,6 +16,9 @@
         android:theme="@style/Theme.EventEase"
         tools:targetApi="31">
         <activity
+            android:name=".OrganizerViewListAttendee"
+            android:exported="false" />
+        <activity
             android:name=".TicketsActivity"
             android:exported="false" />
         <activity
@@ -40,9 +43,6 @@
             android:name=".OrganizerEventCreation"
             android:exported="false" />
         <activity
-            android:name=".EventDetailFromOrganizerAccount"
-            android:exported="false" />
-        <activity
             android:name=".OrganizerActiveEvents"
             android:exported="false" />
         <activity
@@ -58,10 +58,7 @@
         <activity
             android:name=".AttendeePastEvents"
             android:exported="false" />
-        <activity android:name=".AttendeeEventDetail" />
-        <activity
-            android:name=".EventDetailFromAttendeeAccount"
-            android:exported="false" />
+
         <activity
             android:name=".AttendeeActiveEvents"
             android:exported="false" />

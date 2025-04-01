@@ -118,8 +118,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAttendeeActive"
-        android:layout_width="428dp"
-        android:layout_height="444dp"
+        android:layout_width="399dp"
+        android:layout_height="438dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

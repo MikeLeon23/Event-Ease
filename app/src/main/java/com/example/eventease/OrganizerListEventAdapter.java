@@ -30,7 +30,7 @@ public class OrganizerListEventAdapter extends RecyclerView.Adapter<OrganizerLis
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.activity_event_list, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.activity_event_list_organizer_view, parent, false);
         return new ViewHolder(view);
     }
 
