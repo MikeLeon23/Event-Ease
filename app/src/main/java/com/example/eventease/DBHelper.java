@@ -391,7 +391,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Event getEventObjById(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_EVENTS, null, "event_id = ?" + eventId, new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TABLE_EVENTS, null, "event_id = ?", new String[]{eventId}, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             Event event = new Event(
@@ -651,20 +651,40 @@ public class DBHelper extends SQLiteOpenHelper {
         return success;
     }
 
-    public List<Event> getAllActiveEventsByUserId(String userId) {
+    public List<Event> getAllActiveEventsByUserId(String userId, String eventName, String eventDate, String organizerName) {
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query =  "SELECT e.*," +
+        String query = "SELECT e.*, " +
                 " CASE" +
                 " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
                 " ELSE 0" +
                 " END AS is_interested" +
-                " FROM " + TABLE_EVENTS +" e" +
+                " FROM " + TABLE_EVENTS + " e" +
                 " LEFT JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
                 " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID + " AND ie." + COLUMN_INTEREST_USER_ID + " = ?" +
+                " LEFT JOIN " + TABLE_USERS + " u" +
+                " ON e." + COLUMN_ORGANIZER_ID + " = u." + COLUMN_ID +
                 " WHERE e." + COLUMN_EVENT_STATUS + " = 'enable'";
-        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        // Add search conditions
+        List<String> selectionArgs = new ArrayList<>();
+        selectionArgs.add(userId); // Add userId as the first argument for the JOIN condition
+
+        if (eventName != null && !eventName.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_NAME + " LIKE ?";
+            selectionArgs.add("%" + eventName.trim() + "%");
+        }
+        if (eventDate != null && !eventDate.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_DATE + " = ?";
+            selectionArgs.add(eventDate.trim());
+        }
+        if (organizerName != null && !organizerName.trim().isEmpty()) {
+            query += " AND u." + COLUMN_NAME + " LIKE ?";
+            selectionArgs.add("%" + organizerName.trim() + "%");
+        }
+
+        Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -681,7 +701,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) ==1
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) == 1
                 );
                 event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
                 events.add(event);
@@ -691,53 +711,11 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return events;
     }
-
-    public List<Event> getAllPastEventsByUserId(String userId) {
+    public List<Event> getInterestedEventsByUserId(String userId, String eventName, String eventDate, String organizerName) {
         List<Event> events = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query =  "SELECT e.*," +
-                " CASE" +
-                " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
-                " ELSE 0" +
-                " END AS is_interested" +
-                " FROM " + TABLE_EVENTS +" e" +
-                " LEFT JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
-                " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID + " AND ie." + COLUMN_INTEREST_USER_ID + " = ?" +
-                " WHERE e." + COLUMN_EVENT_STATUS + " = 'disable'";
-        Cursor cursor = db.rawQuery(query, new String[]{userId});
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                Event event = new Event(
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
-                        cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) ==1
-                );
-                event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
-                events.add(event);
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-        db.close();
-        return events;
-    }
-    public List<Event> getInterestedEventsByUserId(String userId) {
-        List<Event> events = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // SQL query to join event_info and interested_events tables
-        String query =  "SELECT e.*," +
+        String query = "SELECT e.*, " +
                 " CASE" +
                 " WHEN ie." + COLUMN_INTEREST_USER_ID + " IS NOT NULL THEN 1" +
                 " ELSE 0" +
@@ -745,9 +723,28 @@ public class DBHelper extends SQLiteOpenHelper {
                 " FROM " + TABLE_EVENTS + " e" +
                 " INNER JOIN " + TABLE_INTERESTED_EVENTS + " ie" +
                 " ON e." + COLUMN_EVENT_ID + " = ie." + COLUMN_INTEREST_EVENT_ID +
+                " LEFT JOIN " + TABLE_USERS + " u" +
+                " ON e." + COLUMN_ORGANIZER_ID + " = u." + COLUMN_ID +
                 " WHERE ie." + COLUMN_INTEREST_USER_ID + " = ?";
 
-        Cursor cursor = db.rawQuery(query, new String[]{userId});
+        // Add search conditions
+        List<String> selectionArgs = new ArrayList<>();
+        selectionArgs.add(userId); // Add userId as the first argument for the JOIN condition
+
+        if (eventName != null && !eventName.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_NAME + " LIKE ?";
+            selectionArgs.add("%" + eventName.trim() + "%");
+        }
+        if (eventDate != null && !eventDate.trim().isEmpty()) {
+            query += " AND e." + COLUMN_EVENT_DATE + " = ?";
+            selectionArgs.add(eventDate.trim());
+        }
+        if (organizerName != null && !organizerName.trim().isEmpty()) {
+            query += " AND u." + COLUMN_NAME + " LIKE ?";
+            selectionArgs.add("%" + organizerName.trim() + "%");
+        }
+
+        Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -764,7 +761,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) ==1
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) == 1
                 );
                 event.setInterested(cursor.getInt(cursor.getColumnIndexOrThrow("is_interested")) == 1);
                 events.add(event);
@@ -806,8 +803,8 @@ public class DBHelper extends SQLiteOpenHelper {
         } catch (SQLiteException e) {
             Log.e("DBHelper", "deleteTicket: Error deleting ticket", e);
             e.printStackTrace();
-        }finally {
-        db.close(); // Ensure database is closed properly
+        } finally {
+            db.close(); // Ensure database is closed properly
         }
 
         return success;
