@@ -48,10 +48,6 @@ public class AttendeeAccountManage extends AppCompatActivity {
         imageView = findViewById(R.id.imageAttendee);
         TextView btnSignOut = findViewById(R.id.btnSignOut);
 
-        Button btnEvents = findViewById(R.id.btnEvent);
-        Button btnTickets = findViewById(R.id.btnTicket);
-        Button btnAccount = findViewById(R.id.btnAccount);
-
         dbHelper = new DBHelper(this);
         attendeeId = getIntent().getStringExtra("COLUMN_ID");
         loadUserData(attendeeId);
