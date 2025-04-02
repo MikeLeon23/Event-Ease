@@ -220,7 +220,7 @@
         android:entries="@array/spEventReminder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.764"
-        app:layout_constraintTop_toBottomOf="@+id/edEventDescription"
+        app:layout_constraintTop_toBottomOf="@+id/edEventInvitedPeople"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="50dp" />
 
@@ -339,9 +339,36 @@
         android:text="@string/lbEventReminder"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edEventInvitedPeople"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:id="@+id/lbEventInvitation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Invite:"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edEventDescription"
         android:layout_marginTop="20dp"
         android:layout_marginStart="40dp" />
+
+    <EditText
+        android:id="@+id/edEventInvitedPeople"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:ems="10"
+        android:hint="Enter the accounts you want to invite, separated by commas."
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:maxLines="5"
+        android:scrollbars="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edEventDescription"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <TextView
         android:id="@+id/lbEventTime"

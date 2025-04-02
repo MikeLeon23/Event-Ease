@@ -226,7 +226,7 @@ public class OrganizerEventUpdate extends AppCompatActivity {
             imagePath = dbHelper.getEventImagePath(eventId);
         }
 
-        boolean isInserted = dbHelper.updateEventData(eventId, name, location, date, time, fee, description, reminder, seat, status, imagePath, organizerId, false);
+        boolean isInserted = dbHelper.updateEventData(eventId, name, location, date, time, fee, description, reminder, seat, status, imagePath, organizerId, false, "");
 
         if (isInserted) {
             Toast.makeText(this, "Event Updated Successfully", Toast.LENGTH_SHORT).show();

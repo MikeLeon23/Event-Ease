@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide;
 public class OrganizerEventEdit extends AppCompatActivity {
 
     private DBHelper dbHelper;
-    private EditText edEventName, edEventLocation, edEventFee, edEventDescription, edEventSeats;
+    private EditText edEventName, edEventLocation, edEventFee, edEventDescription, edEventSeats, edEventInvitedPeople;
     private TextView tvEventDate, tvEventTime;
     private Spinner spEventReminder, spEventStatus;
     private ImageView imageEventCreate;
@@ -44,6 +44,7 @@ public class OrganizerEventEdit extends AppCompatActivity {
         btnEventCreate = findViewById(R.id.btnEventCreate);
         btnTurnBack = findViewById(R.id.btnTurnBack);
         btnEvnImgUpload = findViewById(R.id.btnEvnImgUpload);
+        edEventInvitedPeople = findViewById(R.id.edEventInvitedPeople);
 
         // Get the event ID from the intent
         Intent intent = getIntent();
@@ -125,6 +126,7 @@ public class OrganizerEventEdit extends AppCompatActivity {
         String reminder = spEventReminder.getSelectedItem().toString();
         String seatsStr = edEventSeats.getText().toString().trim();
         String status = spEventStatus.getSelectedItem().toString();
+        String emailsOfInvitedPeople = edEventInvitedPeople.getText().toString();
 
         // Validate inputs
         if (name.isEmpty() || location.isEmpty() || date.isEmpty() || time.isEmpty() ||
@@ -157,7 +159,8 @@ public class OrganizerEventEdit extends AppCompatActivity {
                 status,
                 imagePath, // Use the existing image path (or update if image upload is implemented)
                 organizerId,
-                isChecked
+                isChecked,
+                emailsOfInvitedPeople
         );
 
         if (updated) {

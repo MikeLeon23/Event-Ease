@@ -1,6 +1,7 @@
 package com.example.eventease;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -54,7 +55,7 @@ public class OrganizerAccountManage extends AppCompatActivity {
         organizerId = getIntent().getStringExtra("COLUMN_ID");
         loadUserData(organizerId);
 
-        String[] account = {"Profile Management", "Active Events", "Past Events", "Create Event"};
+        String[] account = {"Profile Management", "Active Events", "Past Events", "Create Event", "Invitations"};
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, account);
         listViewAccount.setAdapter(adapter1);
         listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,6 +81,13 @@ public class OrganizerAccountManage extends AppCompatActivity {
                         intent = new Intent(OrganizerAccountManage.this, OrganizerEventCreation.class);
                         intent.putExtra("COLUMN_ID", organizerId);
                         startActivity(intent);;
+                        break;
+                    case 4:
+                        SharedPreferences prefs = OrganizerAccountManage.this.getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                        String userEmail = prefs.getString("user_email", null);
+                        intent = new Intent(OrganizerAccountManage.this, Invitations.class);
+                        intent.putExtra("user_email", userEmail); // Replace with actual email
+                        startActivity(intent);
                         break;
                 }
             }

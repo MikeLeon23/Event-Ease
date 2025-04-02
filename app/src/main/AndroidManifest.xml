@@ -17,6 +17,9 @@
         android:theme="@style/Theme.EventEase"
         tools:targetApi="31">
         <activity
+            android:name=".Invitations"
+            android:exported="false" />
+        <activity
             android:name=".OrganizerEventEdit"
             android:exported="false" />
         <activity
