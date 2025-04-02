@@ -10,6 +10,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 public class EventDetail extends AppCompatActivity {
     private DBHelper dbHelper;
     private String eventId;
@@ -45,7 +49,6 @@ public class EventDetail extends AppCompatActivity {
 
     private void loadEventData(String eventId) {
         Event event = dbHelper.getEventObjById(eventId);
-        Log.d("Zhihao", "zhihao: " + eventId);
         if (event != null) {
             // Set event title
             TextView title = findViewById(R.id.event_title);
@@ -69,7 +72,13 @@ public class EventDetail extends AppCompatActivity {
             if (event.getEventImagePath() != null && !event.getEventImagePath().isEmpty()) {
                 // Replace with actual image loading logic (e.g., Glide or Picasso)
                 // Example: Glide.with(this).load(event.getImagePath()).into(image);
-                image.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.placeholder));
+                Glide.with(this)
+                        .load(event.getEventImagePath()) // Load from file path
+                        .apply(new RequestOptions()
+                                .placeholder(R.drawable.placeholder) // Placeholder while loading
+                                .error(R.drawable.placeholder) // Image to show if loading fails
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)) // Cache the image
+                        .into(image);
             } else {
                 image.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.placeholder));
             }
