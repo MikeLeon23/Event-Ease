@@ -2,6 +2,7 @@ package com.example.eventease;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +55,21 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         Event event = eventList.get(position);
         holder.titleTextView.setText(event.getEventName());
         holder.detailsTextView.setText(event.getEventDate() + ", " + event.getEventTime() + ", " + event.getEventLocation());
+
+        // Load the event image using Glide
+        String imagePath = event.getEventImagePath();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            Glide.with(context)
+                    .load(imagePath) // Load from file path
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.placeholder) // Placeholder while loading
+                            .error(R.drawable.placeholder) // Image to show if loading fails
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)) // Cache the image
+                    .into(holder.imageView);
+        } else {
+            // If imagePath is null or empty, show a placeholder
+            holder.imageView.setImageResource(R.drawable.placeholder);
+        }
 
         // Set star icon based on isInterested
         holder.starIcon.setImageResource(event.isInterested() ?
