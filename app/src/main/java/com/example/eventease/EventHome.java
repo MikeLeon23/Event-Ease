@@ -1,6 +1,7 @@
 package com.example.eventease;
 
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,8 +10,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.Manifest;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +40,14 @@ public class EventHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_home);
 
+//        // Request storage permission if not granted
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+//                    100);
+//        }
+
         // Initialize views
         searchText = findViewById(R.id.search_text);
         searchDate = findViewById(R.id.search_date);
@@ -57,7 +69,7 @@ public class EventHome extends AppCompatActivity {
 
         dbHelper = new DBHelper(this);
         List<Event> events = dbHelper.getAllActiveEventsByUserId(userId, null, null, null);
-        adapter = new EventAdapter(this, events, new EventAdapter.OnEventActionListener() {
+        adapter = new EventAdapter(this, events, userId, new EventAdapter.OnEventActionListener() {
             @Override
             public void onEditClick(Event event, int position) {
                 Toast.makeText(EventHome.this, "Edit clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
@@ -65,7 +77,16 @@ public class EventHome extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(Event event, int position) {
-                Toast.makeText(EventHome.this, "Delete clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
+                String eventId = event.getEventId();
+                if (eventId == null) return;
+
+                boolean deleted = dbHelper.deleteEvent(eventId);
+                if (deleted) {
+                    updateEventList();
+                    Toast.makeText(EventHome.this, "Event deleted. ", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(EventHome.this, "Event delete failed.", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -127,6 +148,20 @@ public class EventHome extends AppCompatActivity {
         setupClearButton(searchDate);
         setupClearButton(searchOrganizer);
     }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == 100) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // Permission granted, refresh the event list
+//                updateEventList();
+//            } else {
+//                // Permission denied, show a message or handle accordingly
+//                Toast.makeText(this, "Storage permission is required to load event images", Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    }
 
     // Method to set up clear button functionality for an EditText
     private void setupClearButton(EditText editText) {
