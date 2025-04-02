@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OrganizerEventEdit">
+
+    <TextView
+        android:id="@+id/lbEvenCreate"
+        android:layout_width="305dp"
+        android:layout_height="51dp"
+        android:fontFamily="sans-serif"
+        android:text="EVENT EDIT"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintHorizontal_bias="0.409"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.068" />
+
+    <TextView
+        android:id="@+id/tvVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tvVersion"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spEventStatus"
+        app:layout_constraintVertical_bias="0.982" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="353dp"
+        android:layout_height="146dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbEvenCreate"
+        app:layout_constraintVertical_bias="0.138">
+
+        <ImageView
+            android:id="@+id/imageEventCreate"
+            android:layout_width="145dp"
+            android:layout_height="143dp"
+            android:background="#F44336"
+            android:baseline="@dimen/cardview_default_radius"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="39dp"
+            android:src="@drawable/upload"
+            android:tint="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnEvnImgUpload"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ExtraText,UseAppTint" />
+
+        <TextView
+            android:id="@+id/btnEvnImgUpload"
+            android:layout_width="79dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="36dp"
+            android:paddingStart="8dp"
+            android:text="@string/btnUpload"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.492" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/lbUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventName"
+        android:textSize="20sp"
+        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
+        app:layout_constraintVertical_bias="0.318" />
+
+    <TextView
+        android:id="@+id/lbUserEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventLocation"
+        android:textSize="20sp"
+        app:layout_constraintHorizontal_bias="0.124"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edEventName"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:id="@+id/lbEventSchedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventDate"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edEventLocation"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <EditText
+        android:id="@+id/edEventName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/lbEnter"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/tvEventTime"
+        android:layout_width="206dp"
+        android:layout_height="40dp"
+        android:hint="..."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.779"
+        app:layout_constraintTop_toBottomOf="@+id/tvEventDate"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp" />
+
+    <TextView
+        android:id="@+id/tvEventDate"
+        android:layout_width="206dp"
+        android:layout_height="38dp"
+        android:hint="@string/lbEnter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.772"
+        app:layout_constraintTop_toBottomOf="@+id/edEventLocation"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp" />
+
+    <EditText
+        android:id="@+id/edEventFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/lbEnter"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintTop_toBottomOf="@+id/tvEventTime"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <EditText
+        android:id="@+id/edEventDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/lbEnter"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintTop_toBottomOf="@+id/edEventFee"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <Spinner
+        android:id="@+id/spEventStatus"
+        android:layout_width="211dp"
+        android:layout_height="46dp"
+        android:entries="@array/spEventStatus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintTop_toBottomOf="@+id/edEventSeats"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <EditText
+        android:id="@+id/edEventSeats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/lbEnter"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintTop_toBottomOf="@+id/spEventReminder"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <Spinner
+        android:id="@+id/spEventReminder"
+        android:layout_width="211dp"
+        android:layout_height="51dp"
+        android:entries="@array/spEventReminder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintTop_toBottomOf="@+id/edEventDescription"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp" />
+
+    <EditText
+        android:id="@+id/edEventLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/lbEnter"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.764"
+        app:layout_constraintTop_toBottomOf="@+id/edEventName"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="106dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="88dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.813">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/turnback"
+            android:tint="@color/black"
+            tools:ignore="ExtraText,UseAppTint" />
+
+        <TextView
+            android:id="@+id/btnTurnBack"
+            android:layout_width="59dp"
+            android:layout_height="24dp"
+            android:paddingStart="8dp"
+            android:text="@string/btnBack"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="72dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.813">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/logout"
+            android:tint="@color/black"
+            tools:ignore="ExtraText,UseAppTint" />
+
+        <TextView
+            android:id="@+id/btnEventCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:text="Save"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lbEventFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventFee"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEventTime"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:id="@+id/lbEventDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventDescription"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edEventFee"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:id="@+id/lbEventSeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventSeats"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spEventReminder"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:id="@+id/lbEventReminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventReminder"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edEventDescription"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:id="@+id/lbEventTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventTime"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEventDate"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:id="@+id/lbEventStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbEventStatus"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edEventSeats"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

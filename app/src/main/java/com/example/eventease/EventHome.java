@@ -1,5 +1,6 @@
 package com.example.eventease;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.Manifest;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -34,19 +37,24 @@ public class EventHome extends AppCompatActivity {
     private ImageView arrowToggle, searchIcon;
     private LinearLayout additionalSearchFields;
     private boolean isSearchExpanded = false;
+    // Activity result launcher for handling the result of OrganizerEventEdit
+    private ActivityResultLauncher<Intent> editEventLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_home);
-
-//        // Request storage permission if not granted
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-//                    100);
-//        }
+        // Initialize the ActivityResultLauncher
+        editEventLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        // Refresh the event list after editing
+                        updateEventList();
+                        Toast.makeText(EventHome.this, "Event updated successfully", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
 
         // Initialize views
         searchText = findViewById(R.id.search_text);
@@ -72,7 +80,10 @@ public class EventHome extends AppCompatActivity {
         adapter = new EventAdapter(this, events, userId, new EventAdapter.OnEventActionListener() {
             @Override
             public void onEditClick(Event event, int position) {
-                Toast.makeText(EventHome.this, "Edit clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
+                // Navigate to OrganizerEventEdit activity
+                Intent intent = new Intent(EventHome.this, OrganizerEventEdit.class);
+                intent.putExtra("event_id", event.getEventId());
+                editEventLauncher.launch(intent);
             }
 
             @Override
