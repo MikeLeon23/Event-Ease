@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="49dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="164dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="sans-serif"
         android:text="@string/tvAccManagement"
         android:textSize="30sp"
@@ -24,10 +24,11 @@
         android:id="@+id/listViewAttendeeAccount"
         android:layout_width="380dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintAttendeeLayout" />
 
 
     <LinearLayout
@@ -75,9 +76,9 @@
         android:layout_width="342dp"
         android:layout_height="122dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textView4">
 
         <ImageView
             android:id="@+id/imageAttendee"
