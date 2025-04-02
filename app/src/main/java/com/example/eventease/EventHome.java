@@ -69,7 +69,7 @@ public class EventHome extends AppCompatActivity {
 
         dbHelper = new DBHelper(this);
         List<Event> events = dbHelper.getAllActiveEventsByUserId(userId, null, null, null);
-        adapter = new EventAdapter(this, events, new EventAdapter.OnEventActionListener() {
+        adapter = new EventAdapter(this, events, userId, new EventAdapter.OnEventActionListener() {
             @Override
             public void onEditClick(Event event, int position) {
                 Toast.makeText(EventHome.this, "Edit clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
@@ -77,7 +77,16 @@ public class EventHome extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(Event event, int position) {
-                Toast.makeText(EventHome.this, "Delete clicked for: " + event.getEventName(), Toast.LENGTH_SHORT).show();
+                String eventId = event.getEventId();
+                if (eventId == null) return;
+
+                boolean deleted = dbHelper.deleteEvent(eventId);
+                if (deleted) {
+                    updateEventList();
+                    Toast.makeText(EventHome.this, "Event deleted. ", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(EventHome.this, "Event delete failed.", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

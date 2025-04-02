@@ -466,9 +466,58 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public boolean deleteEvent(String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        long result = db.delete(TABLE_EVENTS, COLUMN_EVENT_ID + " = ?", new String[]{eventId});
-        db.close();
-        return result != -1;
+        boolean success = false;
+
+        // Begin a transaction to ensure atomicity
+        db.beginTransaction();
+        try {
+            // 1. Delete related tickets from the tickets table
+            int ticketsDeleted = db.delete(TABLE_TICKET,
+                    COLUMN_TICKET_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + ticketsDeleted + " tickets for eventId=" + eventId);
+
+            // 2. Delete related interested events from the interested_events table
+            int interestedEventsDeleted = db.delete(TABLE_INTERESTED_EVENTS,
+                    COLUMN_INTEREST_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + interestedEventsDeleted + " interested events for eventId=" + eventId);
+
+            // 3. Delete related notifications from the notifications table
+            int notificationsDeleted = db.delete(TABLE_NOTIFICATIONS,
+                    COLUMN_NOTIFICATION_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + notificationsDeleted + " notifications for eventId=" + eventId);
+
+            // 4. Delete related event invitations from the event_invitations table
+            int invitationsDeleted = db.delete("event_invitations",
+                    "event_id = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + invitationsDeleted + " event invitations for eventId=" + eventId);
+
+            // 5. Delete the event itself from the event_info table
+            int eventsDeleted = db.delete(TABLE_EVENTS,
+                    COLUMN_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + eventsDeleted + " event(s) for eventId=" + eventId);
+
+            // If the event was deleted successfully, mark the transaction as successful
+            if (eventsDeleted > 0) {
+                success = true;
+                db.setTransactionSuccessful();
+            } else {
+                Log.e("DBHelper", "deleteEvent: No event found with eventId=" + eventId);
+            }
+        } catch (SQLiteException e) {
+            Log.e("DBHelper", "deleteEvent: Error deleting event or related data", e);
+            success = false;
+        } finally {
+            // End the transaction (commit if successful, rollback if not)
+            db.endTransaction();
+            db.close();
+        }
+
+        return success;
     }
 
 //    public List<Event> getActiveEventsByAttendee(String attendeeId) {

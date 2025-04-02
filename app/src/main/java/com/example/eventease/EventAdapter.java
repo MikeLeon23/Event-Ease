@@ -2,7 +2,6 @@ package com.example.eventease;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private List<Event> eventList;
     private Context context;
     private OnEventActionListener actionListener;
+    private String userId;
 
     // Interface for handling edit and delete actions
     public interface OnEventActionListener {
@@ -31,10 +31,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         void onStarClick(Event event, int position);
     }
 
-    public EventAdapter(Context context, List<Event> eventList, OnEventActionListener actionListener) {
+    public EventAdapter(Context context, List<Event> eventList, String userId, OnEventActionListener actionListener) {
         this.eventList = eventList != null ? eventList : new ArrayList<>();
         this.actionListener = actionListener;
         this.context = context;
+        this.userId = userId;
     }
 
     public void updateEvents(List<Event> newEvents) {
@@ -74,6 +75,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         // Set star icon based on isInterested
         holder.starIcon.setImageResource(event.isInterested() ?
                 R.drawable.ic_star_fill : R.drawable.ic_star);
+
+        // Show edit and delete buttons only if the logged-in user is the organizer
+        if (userId != null && userId.equals(event.getOrganizerId())) {
+            holder.editIcon.setVisibility(View.VISIBLE);
+            holder.deleteIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.editIcon.setVisibility(View.GONE);
+            holder.deleteIcon.setVisibility(View.GONE);
+        }
 
         // Set click listeners for edit and delete icons
         holder.editIcon.setOnClickListener(v -> {
