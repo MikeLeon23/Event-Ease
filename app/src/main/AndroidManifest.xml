@@ -26,6 +26,12 @@
             android:name=".ForgotPasswordActivity"
             android:exported="false" />
         <activity
+            android:name=".Invitations"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerEventEdit"
+            android:exported="false" />
+        <activity
             android:name=".OrganizerViewListAttendee"
             android:exported="false" />
         <activity

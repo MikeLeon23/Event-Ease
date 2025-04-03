@@ -27,7 +27,7 @@ import java.util.Calendar;
 
 public class OrganizerEventCreation extends AppCompatActivity {
 
-    EditText edEventName, edEventLocation, edEventFee, edEventDescription, edEventSeat;
+    EditText edEventName, edEventLocation, edEventFee, edEventDescription, edEventSeat, edEventInvitedPeople;
     TextView edEventDate, edEventTime, btnUploadImage, btnEventCreate, btnGoBack;
     Spinner spEventReminder, spEventStatus;
     Calendar calendar;
@@ -62,6 +62,7 @@ public class OrganizerEventCreation extends AppCompatActivity {
         btnUploadImage = findViewById(R.id.btnEvnImgUpload);
         btnEventCreate = findViewById(R.id.btnEventCreate);
         btnGoBack = findViewById(R.id.btnTurnBack);
+        edEventInvitedPeople = findViewById(R.id.edEventInvitedPeople);
 
         btnUploadImage.setOnClickListener(v -> openGallery());
 
@@ -182,8 +183,9 @@ public class OrganizerEventCreation extends AppCompatActivity {
         String reminder = spEventReminder.getSelectedItem().toString();
         int seat = Integer.parseInt(edEventSeat.getText().toString());
         String status = spEventStatus.getSelectedItem().toString();
+        String emailsOfInvitedPeople = edEventInvitedPeople.getText().toString();
 
-        boolean isInserted = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, status, imagePath, organizerId, false);
+        boolean isInserted = dbHelper.insertEventData(name, location, date, time, fee, description, reminder, seat, status, imagePath, organizerId, false, emailsOfInvitedPeople);
 
         if (isInserted) {
             Toast.makeText(this, "Event Saved Successfully", Toast.LENGTH_SHORT).show();

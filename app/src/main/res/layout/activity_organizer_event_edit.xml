@@ -5,15 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OrganizerEventCreation">
-
+    tools:context=".OrganizerEventEdit">
 
     <TextView
         android:id="@+id/lbEvenCreate"
         android:layout_width="305dp"
         android:layout_height="51dp"
         android:fontFamily="sans-serif"
-        android:text="@string/lbEventCreate"
+        android:text="EVENT EDIT"
         android:textSize="30sp"
         android:textStyle="bold"
         android:layout_marginTop="20dp"
@@ -49,7 +48,7 @@
             android:id="@+id/imageEventCreate"
             android:layout_width="145dp"
             android:layout_height="143dp"
-            android:background="#D3D3D3"
+            android:background="#F44336"
             android:baseline="@dimen/cardview_default_radius"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -294,7 +293,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="8dp"
-            android:text="@string/btnCreate"
+            android:text="Save"
             android:textColor="@color/black"
             android:textSize="20sp" />
     </LinearLayout>
@@ -391,6 +390,5 @@
         app:layout_constraintTop_toBottomOf="@+id/edEventSeats"
         android:layout_marginTop="20dp"
         android:layout_marginStart="40dp" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

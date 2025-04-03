@@ -63,6 +63,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TICKET_USER_ID = "ticket_user_id";
     public static final String COLUMN_TICKET_EVENT_ID = "ticket_event_id";
 
+    // EVENT INVITATIONS TABLE (already exists)
+    public static final String TABLE_EVENT_INVITATIONS = "event_invitations";
+    public static final String COLUMN_INVITATION_ID = "invitation_id";
+    public static final String COLUMN_INVITATION_EVENT_ID = "event_id";
+    public static final String COLUMN_INVITATION_EMAIL = "email";
+    public static final String COLUMN_INVITATION_STATUS = "status";
+
     // TABLE OTP FOR PASSWORD RESET
     private static final String TABLE_OTP = "otp_password_reset";
     private static final String COLUMN_OTP_ID = "otp_id";
@@ -378,8 +385,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.query(TABLE_USERS , null, COLUMN_ID + " = ?", new String[]{id}, null, null, null);
     }
 
+    // Insert event data and save invitations
     public boolean insertEventData(String name, String location, String date, String time,
-                                   double fee, String description, String reminder, int seat, String status, String imagePath, String organizerId, boolean isChecked) {
+                                   double fee, String description, String reminder, int seat,
+                                   String status, String imagePath, String organizerId,
+                                   boolean isChecked, String invitedEmails) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -396,8 +406,26 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ORGANIZER_ID, organizerId);
         values.put(COLUMN_CHECK, isChecked ? 1 : 0);
 
-        long result = db.insert(TABLE_EVENTS, null, values);
-        return result != -1;
+        long eventId = db.insert(TABLE_EVENTS, null, values);
+        if (eventId == -1) {
+            Log.e("DBHelper", "Failed to insert event: " + name);
+            db.close();
+            return false;
+        }
+
+        // Save invitations if provided
+        if (invitedEmails != null && !invitedEmails.trim().isEmpty()) {
+            String[] emails = invitedEmails.split(",");
+            for (String email : emails) {
+                email = email.trim();
+                if (!email.isEmpty()) {
+                    saveEventInvitation(String.valueOf(eventId), email);
+                }
+            }
+        }
+
+        db.close();
+        return true;
     }
 
     public Cursor getEventById(String eventId){
@@ -460,8 +488,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return imagePath;
     }
 
+    // Update event data and invitations
     public boolean updateEventData(String eventId, String name, String location, String date, String time,
-                                   double fee, String description, String reminder, int seat, String status, String imagePath, String organizerId, boolean isChecked) {
+                                   double fee, String description, String reminder, int seat,
+                                   String status, String imagePath, String organizerId,
+                                   boolean isChecked, String invitedEmails) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_EVENT_NAME, name);
@@ -474,17 +505,126 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_EVENT_SEAT, seat);
         values.put(COLUMN_EVENT_STATUS, status);
         values.put(COLUMN_IMAGE_PATH, imagePath);
+        values.put(COLUMN_ORGANIZER_ID, organizerId);
+        values.put(COLUMN_CHECK, isChecked ? 1 : 0);
 
         long result = db.update(TABLE_EVENTS, values, COLUMN_EVENT_ID + " = ?", new String[]{eventId});
+        if (result == -1) {
+            Log.e("DBHelper", "Failed to update event: " + eventId);
+            db.close();
+            return false;
+        }
+
+        // Update invitations: Delete existing and re-insert
+        db.delete(TABLE_EVENT_INVITATIONS, COLUMN_INVITATION_EVENT_ID + " = ?", new String[]{eventId});
+        if (invitedEmails != null && !invitedEmails.trim().isEmpty()) {
+            String[] emails = invitedEmails.split(",");
+            for (String email : emails) {
+                email = email.trim();
+                if (!email.isEmpty()) {
+                    saveEventInvitation(eventId, email);
+                }
+            }
+        }
+
         db.close();
-        return result != -1;
+        return true;
+    }
+
+    // Fetch events where the user is invited
+    public List<Event> getInvitedEventsByEmail(String email) {
+        List<Event> events = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT e.* " +
+                "FROM " + TABLE_EVENTS + " e " +
+                "JOIN " + TABLE_EVENT_INVITATIONS + " ei " +
+                "ON e." + COLUMN_EVENT_ID + " = ei." + COLUMN_INVITATION_EVENT_ID + " " +
+                "WHERE ei." + COLUMN_INVITATION_EMAIL + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Event event = new Event(
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_TIME)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EVENT_FEE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_REMINDER)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EVENT_SEAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_STATUS)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ORGANIZER_ID)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CHECK)) == 1
+                );
+                events.add(event);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        Log.d("DBHelper", "Invited Events Retrieved: " + events.size() + " for email=" + email);
+        return events;
     }
 
     public boolean deleteEvent(String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        long result = db.delete(TABLE_EVENTS, COLUMN_EVENT_ID + " = ?", new String[]{eventId});
-        db.close();
-        return result != -1;
+        boolean success = false;
+
+        // Begin a transaction to ensure atomicity
+        db.beginTransaction();
+        try {
+            // 1. Delete related tickets from the tickets table
+            int ticketsDeleted = db.delete(TABLE_TICKET,
+                    COLUMN_TICKET_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + ticketsDeleted + " tickets for eventId=" + eventId);
+
+            // 2. Delete related interested events from the interested_events table
+            int interestedEventsDeleted = db.delete(TABLE_INTERESTED_EVENTS,
+                    COLUMN_INTEREST_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + interestedEventsDeleted + " interested events for eventId=" + eventId);
+
+            // 3. Delete related notifications from the notifications table
+            int notificationsDeleted = db.delete(TABLE_NOTIFICATIONS,
+                    COLUMN_NOTIFICATION_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + notificationsDeleted + " notifications for eventId=" + eventId);
+
+            // 4. Delete related event invitations from the event_invitations table
+            int invitationsDeleted = db.delete("event_invitations",
+                    "event_id = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + invitationsDeleted + " event invitations for eventId=" + eventId);
+
+            // 5. Delete the event itself from the event_info table
+            int eventsDeleted = db.delete(TABLE_EVENTS,
+                    COLUMN_EVENT_ID + " = ?",
+                    new String[]{eventId});
+            Log.d("DBHelper", "deleteEvent: Deleted " + eventsDeleted + " event(s) for eventId=" + eventId);
+
+            // If the event was deleted successfully, mark the transaction as successful
+            if (eventsDeleted > 0) {
+                success = true;
+                db.setTransactionSuccessful();
+            } else {
+                Log.e("DBHelper", "deleteEvent: No event found with eventId=" + eventId);
+            }
+        } catch (SQLiteException e) {
+            Log.e("DBHelper", "deleteEvent: Error deleting event or related data", e);
+            success = false;
+        } finally {
+            // End the transaction (commit if successful, rollback if not)
+            db.endTransaction();
+            db.close();
+        }
+
+        return success;
     }
 
 //    public List<Event> getActiveEventsByAttendee(String attendeeId) {

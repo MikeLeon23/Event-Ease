@@ -9,8 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +19,25 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private List<Event> eventList;
     private Context context;
     private OnEventActionListener actionListener;
+    private String userId;
+    private boolean isInvitationsPage; // New flag
 
-    // Interface for handling edit and delete actions
     public interface OnEventActionListener {
         void onEditClick(Event event, int position);
         void onDeleteClick(Event event, int position);
         void onStarClick(Event event, int position);
     }
 
-    public EventAdapter(Context context, List<Event> eventList, OnEventActionListener actionListener) {
+    public EventAdapter(Context context, List<Event> eventList, String userId, OnEventActionListener actionListener, boolean isInvitationsPage) {
         this.eventList = eventList != null ? eventList : new ArrayList<>();
         this.actionListener = actionListener;
         this.context = context;
+        this.userId = userId;
+        this.isInvitationsPage = isInvitationsPage;
+    }
+
+    public EventAdapter(Context context, List<Event> eventList, String userId, OnEventActionListener actionListener) {
+        this(context, eventList, userId, actionListener, false);
     }
 
     public void updateEvents(List<Event> newEvents) {
@@ -51,11 +59,33 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.titleTextView.setText(event.getEventName());
         holder.detailsTextView.setText(event.getEventDate() + ", " + event.getEventTime() + ", " + event.getEventLocation());
 
-        // Set star icon based on isInterested
+        String imagePath = event.getEventImagePath();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            Glide.with(context)
+                    .load(imagePath)
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.placeholder)
+                            .error(R.drawable.placeholder)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .into(holder.imageView);
+        } else {
+            holder.imageView.setImageResource(R.drawable.placeholder);
+        }
+
         holder.starIcon.setImageResource(event.isInterested() ?
                 R.drawable.ic_star_fill : R.drawable.ic_star);
 
-        // Set click listeners for edit and delete icons
+        if (isInvitationsPage) {
+            holder.editIcon.setVisibility(View.GONE);
+            holder.deleteIcon.setVisibility(View.GONE);
+        } else if (userId != null && userId.equals(event.getOrganizerId())) {
+            holder.editIcon.setVisibility(View.VISIBLE);
+            holder.deleteIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.editIcon.setVisibility(View.GONE);
+            holder.deleteIcon.setVisibility(View.GONE);
+        }
+
         holder.editIcon.setOnClickListener(v -> {
             if (actionListener != null) {
                 actionListener.onEditClick(event, position);
@@ -74,10 +104,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             }
         });
 
-        // Set click listener for the entire card
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, EventDetail.class);
-            intent.putExtra("event_id", event.getEventId()); // Pass the event ID
+            intent.putExtra("event_id", event.getEventId());
             context.startActivity(intent);
         });
     }

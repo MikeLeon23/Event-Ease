@@ -1,6 +1,7 @@
 package com.example.eventease;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ public class AttendeeAccountManage extends AppCompatActivity {
     ImageView imageView;
     DBHelper dbHelper;
     String attendeeId;
+    String userEmail;
     private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
@@ -52,7 +54,10 @@ public class AttendeeAccountManage extends AppCompatActivity {
         attendeeId = getIntent().getStringExtra("COLUMN_ID");
         loadUserData(attendeeId);
 
-        String[] account = {"Profile Management", "Active Events", "Past Events"};
+        SharedPreferences prefs = AttendeeAccountManage.this.getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        userEmail = prefs.getString("user_email", null);
+
+        String[] account = {"Profile Management", "Active Events", "Past Events", "Invitations"};
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, account);
         listViewAccount.setAdapter(adapter1);
         listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -72,6 +77,11 @@ public class AttendeeAccountManage extends AppCompatActivity {
                     case 2:
                         intent = new Intent(AttendeeAccountManage.this, AttendeePastEvents.class);
                         intent.putExtra("COLUMN_ID", attendeeId);
+                        startActivity(intent);
+                        break;
+                    case 3:
+                        intent = new Intent(AttendeeAccountManage.this, Invitations.class);
+                        intent.putExtra("user_email", userEmail); // Replace with actual email
                         startActivity(intent);
                         break;
                 }
