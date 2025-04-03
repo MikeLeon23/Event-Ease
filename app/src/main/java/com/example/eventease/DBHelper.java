@@ -7,14 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import com.example.eventease.Notification;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "userProfile.db";
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 17;
     public static final String COLUMN_IMAGE_PATH = "image_path"; // Store the image path here
 
     // USER PROFILE TABLE
@@ -62,6 +62,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TICKET_ID = "ticket_id";
     public static final String COLUMN_TICKET_USER_ID = "ticket_user_id";
     public static final String COLUMN_TICKET_EVENT_ID = "ticket_event_id";
+
+    // TABLE OTP FOR PASSWORD RESET
+    private static final String TABLE_OTP = "otp_password_reset";
+    private static final String COLUMN_OTP_ID = "otp_id";
+    private static final String COLUMN_EMAIL_RESET = "email_reset";
+    private static final String COLUMN_NEW_PASSWORD = "new_password";
+    private static final String COLUMN_OTP = "otp";
+
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -135,6 +143,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY (" + COLUMN_TICKET_EVENT_ID + ") REFERENCES " + TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "))";
         db.execSQL(CREATE_TICKET_TABLE);
 
+        String CREATE_OTP_TABLE = "CREATE TABLE " + TABLE_OTP + " (" +
+                COLUMN_OTP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_EMAIL_RESET + " TEXT UNIQUE, " +
+                COLUMN_NEW_PASSWORD + " TEXT, " +
+                COLUMN_OTP + " TEXT)";
+        db.execSQL(CREATE_OTP_TABLE);
+
         Log.d("DBHelper", "Database Created Successfully");
     }
 
@@ -161,6 +176,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTED_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TICKET);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_OTP);
 
         db.execSQL("DROP TABLE IF EXISTS event_invitations");
         onCreate(db);
@@ -935,4 +951,66 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return attendees;
     }
+
+    // Method to add OTP to the database
+    public long  addOtp(String email, String otp) {
+        // Get writable database instance
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Create a ContentValues object to hold the data
+        ContentValues values = new ContentValues();
+        values.put("email_reset", email);
+        values.put("otp", otp);
+
+        // Use INSERT OR REPLACE to insert or update the OTP record
+        long rowId = db.insertWithOnConflict("otp_password_reset", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+
+        // Check if the insert was successful
+        if (rowId == -1) {
+            // If the insertion failed, log or handle the failure
+            Log.e("DB_ERROR", "Error inserting OTP for email: " + email);
+        } else {
+            // Successfully inserted or replaced
+            Log.d("DB_SUCCESS", "OTP for email " + email + " was inserted/replaced successfully.");
+        }
+
+        // Close the database connection
+        db.close();
+
+        return rowId;
+    }
+
+    // Method to verify OTP
+    public boolean verifyOtp(String otp) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_OTP, null, COLUMN_OTP + " = ?", new String[]{otp}, null, null, null);
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+    }
+
+    // Method to update password
+    public void updatePassword(String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PASSWORD, newPassword);
+
+        db.update(TABLE_USERS, values, null, null);
+        db.close();
+    }
+
+    // Method to check if email exists in the database
+    public boolean isEmailExist(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM user_profile WHERE email = ?", new String[]{email});
+        boolean exists = cursor.getCount() > 0;  // If the cursor has data, the email exists
+        cursor.close();
+
+        Log.d("DBHelper", "Checking if email exists: " + email + " - Exists: " + exists);
+        return exists;
+    }
+
+
+
+
 }
