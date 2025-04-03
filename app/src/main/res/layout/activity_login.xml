@@ -86,13 +86,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnCheckEventss"
-        android:layout_width="151dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="620dp"
-        android:text="@string/btnEventList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
