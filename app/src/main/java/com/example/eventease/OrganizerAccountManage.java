@@ -30,6 +30,7 @@ public class OrganizerAccountManage extends AppCompatActivity {
     ImageView imageView;
     DBHelper dbHelper;
     String organizerId;
+    String userEmail;
     private static final int PICK_IMAGE_REQUEST = 1;
 //    private static final int STORAGE_PERMISSION_CODE = 100;
 
@@ -52,8 +53,13 @@ public class OrganizerAccountManage extends AppCompatActivity {
         TextView btnSignOut = findViewById(R.id.btnSignOut);
 
         dbHelper = new DBHelper(this);
-        organizerId = getIntent().getStringExtra("COLUMN_ID");
+
+        SharedPreferences prefs = OrganizerAccountManage.this.getSharedPreferences("UserInfo", MODE_PRIVATE);
+        organizerId = prefs.getString("user_id", null);
         loadUserData(organizerId);
+
+        prefs = OrganizerAccountManage.this.getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        userEmail = prefs.getString("user_email", null);
 
         String[] account = {"Profile Management", "Active Events", "Past Events", "Create Event", "Invitations"};
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, account);
@@ -83,8 +89,6 @@ public class OrganizerAccountManage extends AppCompatActivity {
                         startActivity(intent);;
                         break;
                     case 4:
-                        SharedPreferences prefs = OrganizerAccountManage.this.getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                        String userEmail = prefs.getString("user_email", null);
                         intent = new Intent(OrganizerAccountManage.this, Invitations.class);
                         intent.putExtra("user_email", userEmail); // Replace with actual email
                         startActivity(intent);

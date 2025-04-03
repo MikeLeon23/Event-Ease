@@ -49,13 +49,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnCreateNewAccount = findViewById(R.id.btnCreateNewAccount);
-        btnCheckEvents = findViewById(R.id.btnCheckEventss);
-        btnCheckEvents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, EventHome.class));
-            }
-        });
+//        btnCheckEvents = findViewById(R.id.btnCheckEventss);
+//        btnCheckEvents.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(MainActivity.this, EventHome.class));
+//            }
+//        });
         btnCreateNewAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

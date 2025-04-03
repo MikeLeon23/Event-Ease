@@ -51,10 +51,12 @@ public class AttendeeAccountManage extends AppCompatActivity {
         TextView btnSignOut = findViewById(R.id.btnSignOut);
 
         dbHelper = new DBHelper(this);
-        attendeeId = getIntent().getStringExtra("COLUMN_ID");
+
+        SharedPreferences prefs = AttendeeAccountManage.this.getSharedPreferences("UserInfo", MODE_PRIVATE);
+        attendeeId = prefs.getString("user_id", null);
         loadUserData(attendeeId);
 
-        SharedPreferences prefs = AttendeeAccountManage.this.getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        prefs = AttendeeAccountManage.this.getSharedPreferences("UserPrefs", MODE_PRIVATE);
         userEmail = prefs.getString("user_email", null);
 
         String[] account = {"Profile Management", "Active Events", "Past Events", "Invitations"};

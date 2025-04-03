@@ -478,7 +478,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String imagePath = null;
 
-        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_IMAGE_PATH}, COLUMN_EVENT_ID + " = ?", new String[]{userId}, null, null, null);
+        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_IMAGE_PATH}, COLUMN_ID + " = ?", new String[]{userId}, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             imagePath = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH));
