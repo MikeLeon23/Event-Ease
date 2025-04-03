@@ -87,6 +87,12 @@
     <string name="lbEventStatus">Status</string>
     <string name="btnAttendeeList">Attendee</string>
     <string name="lbAttendeeList">LIST OF ATTENDEES</string>
+    <string name="lbPassReset">PASSWORD RECOVERY</string>
+    <string name="btnPassReset">Reset</string>
+    <string name="edNewPass">Enter new password</string>
+    <string name="lbOtpVerification">OTP VERIFICATION</string>
+    <string name="lbEnterOtp">Enter OTP</string>
+    <string name="btnSend">Send</string>
     <string-array name="spEventStatusUpdate">
         <item>draft</item>
         <item>enable</item>

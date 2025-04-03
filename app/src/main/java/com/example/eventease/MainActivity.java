@@ -41,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
             requestStoragePermission();});
 
         btnForgotPass = findViewById(R.id.btnForgotPassword);
+        btnForgotPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ForgotPasswordActivity.class));
+            }
+        });
+
         btnCreateNewAccount = findViewById(R.id.btnCreateNewAccount);
 //        btnCheckEvents = findViewById(R.id.btnCheckEventss);
 //        btnCheckEvents.setOnClickListener(new View.OnClickListener() {
@@ -134,5 +141,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
+
+
+
+
 
 }
