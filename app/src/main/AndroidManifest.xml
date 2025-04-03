@@ -2,16 +2,84 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventEase"
         tools:targetApi="31">
+        <activity
+            android:name=".OtpVerificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Invitations"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerEventEdit"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerViewListAttendee"
+            android:exported="false" />
+        <activity
+            android:name=".TicketsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ShareEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EventDetail"
+            android:exported="false" />
+        <activity
+            android:name=".EventHome"
+            android:exported="false" />
+        <activity
+            android:name=".UserAccountCreation"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerAccountManage"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerEventCreation"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerActiveEvents"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerPastEvents"
+            android:exported="false" />
+        <activity android:name=".OrganizerEventUpdate" />
+        <activity
+            android:name=".OrganizerProfileUpdate"
+            android:exported="false" />
+        <activity
+            android:name=".AttendeeAccountManage"
+            android:exported="false" />
+        <activity
+            android:name=".AttendeePastEvents"
+            android:exported="false" />
+        <activity
+            android:name=".AttendeeActiveEvents"
+            android:exported="false" />
+        <activity
+            android:name=".AttendeeProfileUpdate"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -21,6 +89,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

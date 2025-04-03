@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#808080"
+        android:pathData="M50,20 L80,70 L20,70 Z" /> <!-- Triangle -->
+    <path
+        android:fillColor="#808080"
+        android:pathData="M30,30 H60 V60 H30 Z" /> <!-- Square -->
+    <path
+        android:fillColor="#808080"
+        android:pathData="M50,50 m-15,0 a15,15 0 1,0 30,0 a15,15 0 1,0 -30,0" /> <!-- Circle -->
+</vector>
